@@ -1,6 +1,8 @@
-import { Interval, DateTime, WeekdayNumbers } from "luxon";
+import { Interval, DateTime, WeekdayNumbers, Settings } from "luxon";
 import { dayOverrides } from "./day-overrides";
 import { emptyDay, defaultSchedule } from "./schedule-templates";
+
+Settings.defaultZone = "America/Los_Angeles";
 
 export type VisiblePeriod = {
   interval: Interval;
