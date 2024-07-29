@@ -1,264 +1,89 @@
 import { Interval, DateTime, WeekdayNumbers } from "luxon";
+import { dayOverrides } from "./day-overrides";
+import { emptyDay, defaultSchedule } from "./schedule-templates";
 
-type Period = {
-    interval: Interval;
-} & (
-        | {
-            type: "instructional" | "break";
-            id: string;
-            name: string;
-        }
-        | {
-            type: "passing";
-        }
-    );
-
-export const mondaySchedule: Period[] = [
-    {
-        id: "period-1",
-        type: "instructional",
-        name: "1st Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO('08:30:00-07:00'),
-            DateTime.fromISO("09:15:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("09:15:00-07:00"),
-            DateTime.fromISO("09:20:00-07:00"),
-        ),
-    },
-    {
-        id: "period-2",
-        type: "instructional",
-        name: "2nd Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("09:25:00-07:00"),
-            DateTime.fromISO("10:10:00-07:00"),
-        ),
-    },
-    {
-        id: "brunch",
-        type: "break",
-        name: "Brunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:10:00-07:00"),
-            DateTime.fromISO("10:25:00-07:00"),
-        ),
-    },
-    {
-        id: "period-3",
-        type: "instructional",
-        name: "3rd Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:25:00-07:00"),
-            DateTime.fromISO("11:10:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:10:00-07:00"),
-            DateTime.fromISO("11:20:00-07:00"),
-        ),
-    },
-    {
-        id: "period-4",
-        type: "instructional",
-        name: "4th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:20:00-07:00"),
-            DateTime.fromISO("12:10:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("12:10:00-07:00"),
-            DateTime.fromISO("12:20:00-07:00"),
-        ),
-    },
-    {
-        id: "period-5",
-        type: "instructional",
-        name: "5th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("12:20:00-07:00"),
-            DateTime.fromISO("13:05:00-07:00"),
-        ),
-    },
-    {
-        id: "lunch",
-        type: "break",
-        name: "Lunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("13:05:00-07:00"),
-            DateTime.fromISO("13:45:00-07:00"),
-        ),
-    },
-    {
-        id: "period-6",
-        type: "instructional",
-        name: "6th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("13:45:00-07:00"),
-            DateTime.fromISO("14:30:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("14:30:00-07:00"),
-            DateTime.fromISO("14:40:00-07:00"),
-        ),
-    },
-    {
-        id: "period-7",
-        type: "instructional",
-        name: "7th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("14:40:00-07:00"),
-            DateTime.fromISO("15:25:00-07:00"),
-        ),
-    },
-];
-
-export const oddSchedule: Period[] = [
-    {
-        id: "period-1",
-        type: "instructional",
-        name: "1st Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("08:30:00-07:00"),
-            DateTime.fromISO("10:00:00-07:00"),
-        ),
-    },
-    {
-        id: "brunch",
-        type: "break",
-        name: "Brunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:00:00-07:00"),
-            DateTime.fromISO("10:15:00-07:00"),
-        ),
-    },
-    {
-        id: "period-3",
-        type: "instructional",
-        name: "3rd Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:15:00-07:00"),
-            DateTime.fromISO("11:45:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:45:00-07:00"),
-            DateTime.fromISO("11:55:00-07:00"),
-        ),
-    },
-    {
-        id: "period-5",
-        type: "instructional",
-        name: "5th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:55:00-07:00"),
-            DateTime.fromISO("13:25:00-07:00"),
-        ),
-    },
-    {
-        id: "lunch",
-        type: "break",
-        name: "Lunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("13:25:00-07:00"),
-            DateTime.fromISO("14:05:00-07:00"),
-        ),
-    },
-    {
-        id: "period-7",
-        type: "instructional",
-        name: "7th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("14:05:00-07:00"),
-            DateTime.fromISO("15:35:00-07:00"),
-        ),
-    },
-];
-
-export const evenSchedule: Period[] = [
-    {
-        id: "period-2",
-        type: "instructional",
-        name: "2nd Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("08:30:00-07:00"),
-            DateTime.fromISO("10:00:00-07:00"),
-        ),
-    },
-    {
-        id: "brunch",
-        type: "break",
-        name: "Brunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:00:00-07:00"),
-            DateTime.fromISO("10:15:00-07:00"),
-        ),
-    },
-    {
-        id: "academy",
-        type: "instructional",
-        name: "Academy",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("10:15:00-07:00"),
-            DateTime.fromISO("11:00:00-07:00"),
-        ),
-    },
-    {
-        type: "passing",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:00:00-07:00"),
-            DateTime.fromISO("11:10:00-07:00"),
-        ),
-    },
-    {
-        id: "period-4",
-        type: "instructional",
-        name: "4th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("11:10:00-07:00"),
-            DateTime.fromISO("12:40:00-07:00"),
-        ),
-    },
-    {
-        id: "lunch",
-        type: "break",
-        name: "Lunch",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("12:40:00-07:00"),
-            DateTime.fromISO("13:20:00-07:00"),
-        ),
-    },
-    {
-        id: "period-6",
-        type: "instructional",
-        name: "6th Period",
-        interval: Interval.fromDateTimes(
-            DateTime.fromISO("13:20:00-07:00"),
-            DateTime.fromISO("14:50:00-07:00"),
-        ),
-    },
-];
-
-export const schedule: Record<WeekdayNumbers, Period[]> = {
-    1: [],
-    2: mondaySchedule,
-    3: oddSchedule,
-    4: evenSchedule,
-    5: oddSchedule,
-    6: evenSchedule,
-    7: [],
+export type VisiblePeriod = {
+  interval: Interval;
+  id: string;
+  type: "instructional" | "break";
+  name: string;
 };
+
+export type InvisiblePeriod = {
+  interval: Interval;
+  type: "passing";
+};
+
+export type Period = VisiblePeriod | InvisiblePeriod;
+
+export type DailySchedule = {
+  periods: Period[];
+  message?: string;
+};
+
+export function getScheduleForDay(day: DateTime): DailySchedule {
+  // No school if it's before the start of the school year
+  if (day < DateTime.fromISO("2024-08-12")) {
+    return transformScheduleToDate(emptyDay, day);
+  }
+
+  // No school if it's after the end of the school year
+  if (day > DateTime.fromISO("2025-06-05")) {
+    return transformScheduleToDate(emptyDay, day);
+  }
+
+  // If the day is in the dayOverrides, use that
+  if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
+    return transformScheduleToDate(
+      dayOverrides[day.toFormat("yyyy-LL-dd")],
+      day
+    );
+  }
+
+  return transformScheduleToDate(
+    day.weekday in defaultSchedule
+      ? defaultSchedule[day.weekday as WeekdayNumbers]
+      : emptyDay,
+    day
+  );
+}
+
+/// Returns a `DailySchedule` where each interval has the same time of day but uses the given date
+export function transformScheduleToDate(
+  schedule: DailySchedule,
+  day: DateTime
+): DailySchedule {
+  const transformedPeriods = schedule.periods.map((period) => ({
+    ...period,
+    interval: Interval.fromDateTimes(
+      day.set({
+        hour: period.interval.start!.hour,
+        minute: period.interval.start!.minute,
+      }),
+      day.set({
+        hour: period.interval.end!.hour,
+        minute: period.interval.end!.minute,
+      })
+    ),
+  }));
+
+  return {
+    ...schedule,
+    periods: transformedPeriods,
+  };
+}
+
+export function getScheduleForWeek(
+  week: DateTime
+): (DailySchedule & { date: DateTime })[] {
+  const weekStart = week.startOf("week");
+
+  const schedule: (DailySchedule & { date: DateTime })[] = [];
+
+  for (let i = 0; i < 7; i++) {
+    const day = weekStart.plus({ days: i });
+    schedule.push({ ...getScheduleForDay(day), date: day });
+  }
+
+  return schedule;
+}
