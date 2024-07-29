@@ -7,15 +7,15 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "1st Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("08:30:00-07:00"),
-      DateTime.fromISO("09:15:00-07:00")
+      DateTime.fromISO("08:30:00"),
+      DateTime.fromISO("09:15:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("09:15:00-07:00"),
-      DateTime.fromISO("09:25:00-07:00")
+      DateTime.fromISO("09:15:00"),
+      DateTime.fromISO("09:25:00")
     ),
   },
   {
@@ -23,8 +23,8 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "2nd Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("09:25:00-07:00"),
-      DateTime.fromISO("10:10:00-07:00")
+      DateTime.fromISO("09:25:00"),
+      DateTime.fromISO("10:10:00")
     ),
   },
   {
@@ -32,8 +32,8 @@ export const mondayPeriods: Period[] = [
     type: "break",
     name: "Brunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:10:00-07:00"),
-      DateTime.fromISO("10:25:00-07:00")
+      DateTime.fromISO("10:10:00"),
+      DateTime.fromISO("10:25:00")
     ),
   },
   {
@@ -41,15 +41,15 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "3rd Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:25:00-07:00"),
-      DateTime.fromISO("11:10:00-07:00")
+      DateTime.fromISO("10:25:00"),
+      DateTime.fromISO("11:10:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:10:00-07:00"),
-      DateTime.fromISO("11:20:00-07:00")
+      DateTime.fromISO("11:10:00"),
+      DateTime.fromISO("11:20:00")
     ),
   },
   {
@@ -57,15 +57,15 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "4th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:20:00-07:00"),
-      DateTime.fromISO("12:10:00-07:00")
+      DateTime.fromISO("11:20:00"),
+      DateTime.fromISO("12:10:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("12:10:00-07:00"),
-      DateTime.fromISO("12:20:00-07:00")
+      DateTime.fromISO("12:10:00"),
+      DateTime.fromISO("12:20:00")
     ),
   },
   {
@@ -73,8 +73,8 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "5th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("12:20:00-07:00"),
-      DateTime.fromISO("13:05:00-07:00")
+      DateTime.fromISO("12:20:00"),
+      DateTime.fromISO("13:05:00")
     ),
   },
   {
@@ -82,8 +82,8 @@ export const mondayPeriods: Period[] = [
     type: "break",
     name: "Lunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("13:05:00-07:00"),
-      DateTime.fromISO("13:45:00-07:00")
+      DateTime.fromISO("13:05:00"),
+      DateTime.fromISO("13:45:00")
     ),
   },
   {
@@ -91,15 +91,15 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "6th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("13:45:00-07:00"),
-      DateTime.fromISO("14:30:00-07:00")
+      DateTime.fromISO("13:45:00"),
+      DateTime.fromISO("14:30:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("14:30:00-07:00"),
-      DateTime.fromISO("14:40:00-07:00")
+      DateTime.fromISO("14:30:00"),
+      DateTime.fromISO("14:40:00")
     ),
   },
   {
@@ -107,8 +107,8 @@ export const mondayPeriods: Period[] = [
     type: "instructional",
     name: "7th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("14:40:00-07:00"),
-      DateTime.fromISO("15:25:00-07:00")
+      DateTime.fromISO("14:40:00"),
+      DateTime.fromISO("15:25:00")
     ),
   },
 ];
@@ -119,8 +119,8 @@ export const oddPeriods: Period[] = [
     type: "instructional",
     name: "1st Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("08:30:00-07:00"),
-      DateTime.fromISO("10:00:00-07:00")
+      DateTime.fromISO("08:30:00"),
+      DateTime.fromISO("10:00:00")
     ),
   },
   {
@@ -128,8 +128,8 @@ export const oddPeriods: Period[] = [
     type: "break",
     name: "Brunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:00:00-07:00"),
-      DateTime.fromISO("10:15:00-07:00")
+      DateTime.fromISO("10:00:00"),
+      DateTime.fromISO("10:15:00")
     ),
   },
   {
@@ -137,15 +137,15 @@ export const oddPeriods: Period[] = [
     type: "instructional",
     name: "3rd Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:15:00-07:00"),
-      DateTime.fromISO("11:45:00-07:00")
+      DateTime.fromISO("10:15:00"),
+      DateTime.fromISO("11:45:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:45:00-07:00"),
-      DateTime.fromISO("11:55:00-07:00")
+      DateTime.fromISO("11:45:00"),
+      DateTime.fromISO("11:55:00")
     ),
   },
   {
@@ -153,8 +153,8 @@ export const oddPeriods: Period[] = [
     type: "instructional",
     name: "5th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:55:00-07:00"),
-      DateTime.fromISO("13:25:00-07:00")
+      DateTime.fromISO("11:55:00"),
+      DateTime.fromISO("13:25:00")
     ),
   },
   {
@@ -162,8 +162,8 @@ export const oddPeriods: Period[] = [
     type: "break",
     name: "Lunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("13:25:00-07:00"),
-      DateTime.fromISO("14:05:00-07:00")
+      DateTime.fromISO("13:25:00"),
+      DateTime.fromISO("14:05:00")
     ),
   },
   {
@@ -171,8 +171,8 @@ export const oddPeriods: Period[] = [
     type: "instructional",
     name: "7th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("14:05:00-07:00"),
-      DateTime.fromISO("15:35:00-07:00")
+      DateTime.fromISO("14:05:00"),
+      DateTime.fromISO("15:35:00")
     ),
   },
 ];
@@ -183,8 +183,8 @@ export const evenPeriods: Period[] = [
     type: "instructional",
     name: "2nd Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("08:30:00-07:00"),
-      DateTime.fromISO("10:00:00-07:00")
+      DateTime.fromISO("08:30:00"),
+      DateTime.fromISO("10:00:00")
     ),
   },
   {
@@ -192,8 +192,8 @@ export const evenPeriods: Period[] = [
     type: "break",
     name: "Brunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:00:00-07:00"),
-      DateTime.fromISO("10:15:00-07:00")
+      DateTime.fromISO("10:00:00"),
+      DateTime.fromISO("10:15:00")
     ),
   },
   {
@@ -201,15 +201,15 @@ export const evenPeriods: Period[] = [
     type: "instructional",
     name: "Academy",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("10:15:00-07:00"),
-      DateTime.fromISO("11:00:00-07:00")
+      DateTime.fromISO("10:15:00"),
+      DateTime.fromISO("11:00:00")
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:00:00-07:00"),
-      DateTime.fromISO("11:10:00-07:00")
+      DateTime.fromISO("11:00:00"),
+      DateTime.fromISO("11:10:00")
     ),
   },
   {
@@ -217,8 +217,8 @@ export const evenPeriods: Period[] = [
     type: "instructional",
     name: "4th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("11:10:00-07:00"),
-      DateTime.fromISO("12:40:00-07:00")
+      DateTime.fromISO("11:10:00"),
+      DateTime.fromISO("12:40:00")
     ),
   },
   {
@@ -226,8 +226,8 @@ export const evenPeriods: Period[] = [
     type: "break",
     name: "Lunch",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("12:40:00-07:00"),
-      DateTime.fromISO("13:20:00-07:00")
+      DateTime.fromISO("12:40:00"),
+      DateTime.fromISO("13:20:00")
     ),
   },
   {
@@ -235,8 +235,8 @@ export const evenPeriods: Period[] = [
     type: "instructional",
     name: "6th Period",
     interval: Interval.fromDateTimes(
-      DateTime.fromISO("13:20:00-07:00"),
-      DateTime.fromISO("14:50:00-07:00")
+      DateTime.fromISO("13:20:00"),
+      DateTime.fromISO("14:50:00")
     ),
   },
 ];
