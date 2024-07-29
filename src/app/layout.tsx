@@ -3,13 +3,16 @@ import { Barlow } from "next/font/google";
 import "./globals.css";
 
 const barlow = Barlow({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
   title: "PHS Schedule",
   description: "An interactive schedule for students at Piedmont High School.",
+  icons: {
+    icon: [{ url: "/icon.svg" }, { url: "/icon-dark.svg" }],
+  },
 };
 
 export default function RootLayout({
