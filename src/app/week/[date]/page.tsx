@@ -51,7 +51,7 @@ export default function Home({ params }: { params: { date: string } }) {
   return (
     <div className="h-screen flex flex-col justify-center">
       <WeekNav date={weekStart} />
-      <div className="flex items-stretch justify-center flex-1 max-h-[800px]">
+      <main className="flex items-stretch justify-center flex-1 max-h-[800px]">
         {schedule.map((schedule) => {
           const { date, periods } = schedule;
 
@@ -84,37 +84,37 @@ export default function Home({ params }: { params: { date: string } }) {
             />
           );
         })}
-      </div>
+      </main>
     </div>
   );
 }
 
 function WeekNav({ date }: { date: DateTime }) {
   return (
-    <div className="flex justify-center items-center gap-2">
-      <Link
-        href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
-        prefetch
-      >
-        <Button variant="ghost" size="icon">
+    <nav className="flex justify-center items-center gap-2">
+      <Button variant="ghost" size="icon" asChild aria-label="Previous week">
+        <Link
+          href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
+          prefetch
+        >
           <ChevronLeftIcon className="h-4 w-4" />
-        </Button>
-      </Link>
+        </Link>
+      </Button>
       <h1 className="text-center text-neutral-600 min-w-[150px]">
         Week of{" "}
         <span className="font-medium text-neutral-900">
           {date.toFormat("LLLL d")}
         </span>
       </h1>
-      <Link
-        href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
-        prefetch
-      >
-        <Button variant="ghost" size="icon">
+      <Button variant="ghost" size="icon" asChild aria-label="Next week">
+        <Link
+          href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
+          prefetch
+        >
           <ChevronRightIcon className="h-4 w-4" />
-        </Button>
-      </Link>
-    </div>
+        </Link>
+      </Button>
+    </nav>
   );
 }
 
