@@ -45,7 +45,7 @@ export default function Home({ params }: { params: { date: string } }) {
     redirect(
       `/week/${DateTime.fromFormat(params.date, "yyyy-LL-dd")
         .startOf("week")
-        .toFormat("yyyy-LL-dd")}`
+        .toFormat("yyyy-LL-dd")}`,
     );
   }
 
@@ -72,9 +72,9 @@ export default function Home({ params }: { params: { date: string } }) {
 
   return (
     <>
-      <div className="h-screen flex flex-col justify-center">
+      <div className="flex h-screen flex-col justify-center">
         <WeekNav date={weekStart} />
-        <main className="flex items-stretch justify-center flex-1 max-h-[800px]">
+        <main className="flex max-h-[800px] flex-1 items-stretch justify-center">
           {schedule.map((schedule) => {
             const { date, periods } = schedule;
 
@@ -116,7 +116,7 @@ export default function Home({ params }: { params: { date: string } }) {
 
 function WeekNav({ date }: { date: DateTime }) {
   return (
-    <nav className="flex justify-center items-center gap-2">
+    <nav className="flex items-center justify-center gap-2">
       <Button variant="ghost" size="icon" asChild aria-label="Previous week">
         <Link
           href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
@@ -125,7 +125,7 @@ function WeekNav({ date }: { date: DateTime }) {
           <ChevronLeftIcon className="h-4 w-4" />
         </Link>
       </Button>
-      <h1 className="text-center text-neutral-600 min-w-[150px]">
+      <h1 className="min-w-[150px] text-center text-neutral-600">
         Week of{" "}
         <span className="font-medium text-neutral-900">
           {date.toFormat("LLLL d")}
@@ -160,11 +160,11 @@ function PeriodBlock({ period }: { period: Period }) {
   return (
     <div
       className={cn(
-        "flex justify-center flex-col items-stretch min-h-11",
+        "flex min-h-11 flex-col items-stretch justify-center",
         period.type === "instructional" &&
-          "border border-neutral-200 rounded-md shadow-sm",
+          "rounded-md border border-neutral-200 shadow-sm",
         hasHappened && "opacity-50",
-        isHappening && period.type === "instructional" && "bg-neutral-100"
+        isHappening && period.type === "instructional" && "bg-neutral-100",
       )}
       style={{
         flex: period.interval.length("minutes") / 10,
@@ -174,7 +174,7 @@ function PeriodBlock({ period }: { period: Period }) {
         className={cn(
           "flex flex-col items-start justify-center px-3 text-sm",
           period.type === "break" && "flex-row items-center gap-2",
-          isHappening && period.type === "break" && "border-l-2 border-purple"
+          isHappening && period.type === "break" && "border-l-2 border-purple",
         )}
       >
         <h2 className="font-medium">{period.name}</h2>
@@ -199,8 +199,8 @@ function DailyScheduleView({
   const { periods } = schedule;
 
   return (
-    <div className="flex flex-col max-w-52 p-2 flex-1 justify-center">
-      <div className="h-12 flex flex-col justify-center">
+    <div className="flex max-w-52 flex-1 flex-col justify-center p-2">
+      <div className="flex h-12 flex-col justify-center">
         {date && (
           <h2 className="text-center">
             {date.weekdayLong}{" "}
@@ -208,12 +208,12 @@ function DailyScheduleView({
           </h2>
         )}
         {schedule.message && (
-          <p className="text-sm text-center text-neutral-700">
+          <p className="text-center text-sm text-neutral-700">
             {schedule.message}
           </p>
         )}
       </div>
-      <div className="flex flex-col flex-1 justify-center">
+      <div className="flex flex-1 flex-col justify-center">
         {periods.map((period) => (
           <PeriodBlock period={period} key={period.interval.toString()} />
         ))}

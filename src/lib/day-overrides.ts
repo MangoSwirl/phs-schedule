@@ -32,7 +32,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Drill Review",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:25:00"),
-          DateTime.fromISO("11:35:00")
+          DateTime.fromISO("11:35:00"),
         ),
       },
       {
@@ -41,7 +41,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Drill",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:35:00"),
-          DateTime.fromISO("12:05:00")
+          DateTime.fromISO("12:05:00"),
         ),
       },
       passingPeriod("12:05:00"),
@@ -91,7 +91,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Homecoming Rally",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:40:00")
+          DateTime.fromISO("12:40:00"),
         ),
       },
       lunchPeriod("12:40:00", "13:20:00"),
@@ -119,7 +119,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Earthquake Drill",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("10:15:00"),
-          DateTime.fromISO("11:45:00")
+          DateTime.fromISO("11:45:00"),
         ),
       },
       passingPeriod("11:45:00"),
@@ -157,7 +157,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         type: "instructional",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:45:00"),
-          DateTime.fromISO("11:55:00")
+          DateTime.fromISO("11:55:00"),
         ),
       },
       {
@@ -166,7 +166,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         type: "instructional",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00")
+          DateTime.fromISO("12:25:00"),
         ),
       },
       passingPeriod("12:25:00"),
@@ -254,7 +254,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Fire drill",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("12:20:00"),
-          DateTime.fromISO("12:50:00")
+          DateTime.fromISO("12:50:00"),
         ),
       },
       lunchPeriod("12:50:00", "13:30:00"),
@@ -291,7 +291,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Reverse Lockdown",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00")
+          DateTime.fromISO("12:25:00"),
         ),
       },
       passingPeriod("12:25:00"),
@@ -315,7 +315,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Spring Rally",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:40:00")
+          DateTime.fromISO("12:40:00"),
         ),
       },
       lunchPeriod("12:40:00", "13:20:00"),
@@ -352,7 +352,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Drill Review",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:45:00"),
-          DateTime.fromISO("11:55:00")
+          DateTime.fromISO("11:55:00"),
         ),
       },
       {
@@ -361,7 +361,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Drill",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00")
+          DateTime.fromISO("12:25:00"),
         ),
       },
       passingPeriod("12:25:00"),
@@ -388,7 +388,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Day on the Green",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("13:30:00"),
-          DateTime.fromISO("15:30:00")
+          DateTime.fromISO("15:30:00"),
         ),
       },
     ],

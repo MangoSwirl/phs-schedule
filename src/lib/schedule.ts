@@ -38,7 +38,7 @@ export function getScheduleForDay(day: DateTime): DailySchedule {
   if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
     return transformScheduleToDate(
       dayOverrides[day.toFormat("yyyy-LL-dd")],
-      day
+      day,
     );
   }
 
@@ -46,14 +46,14 @@ export function getScheduleForDay(day: DateTime): DailySchedule {
     day.weekday in defaultSchedule
       ? defaultSchedule[day.weekday as WeekdayNumbers]
       : emptyDay,
-    day
+    day,
   );
 }
 
 /// Returns a `DailySchedule` where each interval has the same time of day but uses the given date
 export function transformScheduleToDate(
   schedule: DailySchedule,
-  day: DateTime
+  day: DateTime,
 ): DailySchedule {
   const transformedPeriods = schedule.periods.map((period) => ({
     ...period,
@@ -65,7 +65,7 @@ export function transformScheduleToDate(
       day.set({
         hour: period.interval.end!.hour,
         minute: period.interval.end!.minute,
-      })
+      }),
     ),
   }));
 
@@ -76,7 +76,7 @@ export function transformScheduleToDate(
 }
 
 export function getScheduleForWeek(
-  week: DateTime
+  week: DateTime,
 ): (DailySchedule & { date: DateTime })[] {
   const weekStart = week.startOf("week");
 

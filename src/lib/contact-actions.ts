@@ -7,7 +7,7 @@ import { resend } from "@/lib/resend";
 import { problemFormSchema } from "@/components/problem-form";
 
 export async function onSubmitFeedback(
-  data: z.infer<typeof feedbackFormSchema>
+  data: z.infer<typeof feedbackFormSchema>,
 ) {
   const email = env.NOTIFICATION_EMAIL;
 

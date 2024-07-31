@@ -8,14 +8,14 @@ export const mondayPeriods: Period[] = [
     name: "1st Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("08:30:00"),
-      DateTime.fromISO("09:15:00")
+      DateTime.fromISO("09:15:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("09:15:00"),
-      DateTime.fromISO("09:25:00")
+      DateTime.fromISO("09:25:00"),
     ),
   },
   {
@@ -24,7 +24,7 @@ export const mondayPeriods: Period[] = [
     name: "2nd Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("09:25:00"),
-      DateTime.fromISO("10:10:00")
+      DateTime.fromISO("10:10:00"),
     ),
   },
   {
@@ -33,7 +33,7 @@ export const mondayPeriods: Period[] = [
     name: "Brunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:10:00"),
-      DateTime.fromISO("10:25:00")
+      DateTime.fromISO("10:25:00"),
     ),
   },
   {
@@ -42,14 +42,14 @@ export const mondayPeriods: Period[] = [
     name: "3rd Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:25:00"),
-      DateTime.fromISO("11:10:00")
+      DateTime.fromISO("11:10:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:10:00"),
-      DateTime.fromISO("11:20:00")
+      DateTime.fromISO("11:20:00"),
     ),
   },
   {
@@ -58,14 +58,14 @@ export const mondayPeriods: Period[] = [
     name: "4th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:20:00"),
-      DateTime.fromISO("12:10:00")
+      DateTime.fromISO("12:10:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("12:10:00"),
-      DateTime.fromISO("12:20:00")
+      DateTime.fromISO("12:20:00"),
     ),
   },
   {
@@ -74,7 +74,7 @@ export const mondayPeriods: Period[] = [
     name: "5th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("12:20:00"),
-      DateTime.fromISO("13:05:00")
+      DateTime.fromISO("13:05:00"),
     ),
   },
   {
@@ -83,7 +83,7 @@ export const mondayPeriods: Period[] = [
     name: "Lunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("13:05:00"),
-      DateTime.fromISO("13:45:00")
+      DateTime.fromISO("13:45:00"),
     ),
   },
   {
@@ -92,14 +92,14 @@ export const mondayPeriods: Period[] = [
     name: "6th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("13:45:00"),
-      DateTime.fromISO("14:30:00")
+      DateTime.fromISO("14:30:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("14:30:00"),
-      DateTime.fromISO("14:40:00")
+      DateTime.fromISO("14:40:00"),
     ),
   },
   {
@@ -108,7 +108,7 @@ export const mondayPeriods: Period[] = [
     name: "7th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("14:40:00"),
-      DateTime.fromISO("15:25:00")
+      DateTime.fromISO("15:25:00"),
     ),
   },
 ];
@@ -120,7 +120,7 @@ export const oddPeriods: Period[] = [
     name: "1st Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("08:30:00"),
-      DateTime.fromISO("10:00:00")
+      DateTime.fromISO("10:00:00"),
     ),
   },
   {
@@ -129,7 +129,7 @@ export const oddPeriods: Period[] = [
     name: "Brunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:00:00"),
-      DateTime.fromISO("10:15:00")
+      DateTime.fromISO("10:15:00"),
     ),
   },
   {
@@ -138,14 +138,14 @@ export const oddPeriods: Period[] = [
     name: "3rd Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:15:00"),
-      DateTime.fromISO("11:45:00")
+      DateTime.fromISO("11:45:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:45:00"),
-      DateTime.fromISO("11:55:00")
+      DateTime.fromISO("11:55:00"),
     ),
   },
   {
@@ -154,7 +154,7 @@ export const oddPeriods: Period[] = [
     name: "5th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:55:00"),
-      DateTime.fromISO("13:25:00")
+      DateTime.fromISO("13:25:00"),
     ),
   },
   {
@@ -163,7 +163,7 @@ export const oddPeriods: Period[] = [
     name: "Lunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("13:25:00"),
-      DateTime.fromISO("14:05:00")
+      DateTime.fromISO("14:05:00"),
     ),
   },
   {
@@ -172,7 +172,7 @@ export const oddPeriods: Period[] = [
     name: "7th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("14:05:00"),
-      DateTime.fromISO("15:35:00")
+      DateTime.fromISO("15:35:00"),
     ),
   },
 ];
@@ -184,7 +184,7 @@ export const evenPeriods: Period[] = [
     name: "2nd Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("08:30:00"),
-      DateTime.fromISO("10:00:00")
+      DateTime.fromISO("10:00:00"),
     ),
   },
   {
@@ -193,7 +193,7 @@ export const evenPeriods: Period[] = [
     name: "Brunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:00:00"),
-      DateTime.fromISO("10:15:00")
+      DateTime.fromISO("10:15:00"),
     ),
   },
   {
@@ -202,14 +202,14 @@ export const evenPeriods: Period[] = [
     name: "Academy",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("10:15:00"),
-      DateTime.fromISO("11:00:00")
+      DateTime.fromISO("11:00:00"),
     ),
   },
   {
     type: "passing",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:00:00"),
-      DateTime.fromISO("11:10:00")
+      DateTime.fromISO("11:10:00"),
     ),
   },
   {
@@ -218,7 +218,7 @@ export const evenPeriods: Period[] = [
     name: "4th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("11:10:00"),
-      DateTime.fromISO("12:40:00")
+      DateTime.fromISO("12:40:00"),
     ),
   },
   {
@@ -227,7 +227,7 @@ export const evenPeriods: Period[] = [
     name: "Lunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("12:40:00"),
-      DateTime.fromISO("13:20:00")
+      DateTime.fromISO("13:20:00"),
     ),
   },
   {
@@ -236,7 +236,7 @@ export const evenPeriods: Period[] = [
     name: "6th Period",
     interval: Interval.fromDateTimes(
       DateTime.fromISO("13:20:00"),
-      DateTime.fromISO("14:50:00")
+      DateTime.fromISO("14:50:00"),
     ),
   },
 ];

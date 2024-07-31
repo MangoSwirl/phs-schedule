@@ -10,7 +10,7 @@ const formatAsOrdinal = (number: number): string => {
 export const instructionalPeriod = (
   number: number,
   start: string,
-  end: string
+  end: string,
 ): Period => {
   return {
     id: `period-${number}`,
@@ -18,14 +18,14 @@ export const instructionalPeriod = (
     name: `${number}${formatAsOrdinal(number)} Period`,
     interval: Interval.fromDateTimes(
       DateTime.fromISO(start),
-      DateTime.fromISO(end)
+      DateTime.fromISO(end),
     ),
   };
 };
 export const finalPeriod = (
   number: number,
   start: string,
-  end: string
+  end: string,
 ): Period => {
   return {
     id: `final-${number}`,
@@ -33,7 +33,7 @@ export const finalPeriod = (
     name: `Final Exam ${number}`,
     interval: Interval.fromDateTimes(
       DateTime.fromISO(start),
-      DateTime.fromISO(end)
+      DateTime.fromISO(end),
     ),
   };
 };
@@ -44,7 +44,7 @@ export const academyPeriod = (start: string, end: string): Period => {
     name: "Academy",
     interval: Interval.fromDateTimes(
       DateTime.fromISO(start),
-      DateTime.fromISO(end)
+      DateTime.fromISO(end),
     ),
   };
 };
@@ -55,7 +55,7 @@ export const lunchPeriod = (start: string, end: string): Period => {
     name: "Lunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO(start),
-      DateTime.fromISO(end)
+      DateTime.fromISO(end),
     ),
   };
 };
@@ -66,7 +66,7 @@ export const brunchPeriod = (start: string, end: string): Period => {
     name: "Brunch",
     interval: Interval.fromDateTimes(
       DateTime.fromISO(start),
-      DateTime.fromISO(end)
+      DateTime.fromISO(end),
     ),
   };
 };
@@ -74,14 +74,14 @@ export const passingPeriod = (start: string, end?: string): Period => ({
   type: "passing",
   interval: Interval.fromDateTimes(
     DateTime.fromISO(start),
-    end ? DateTime.fromISO(end) : DateTime.fromISO(start).plus({ minutes: 10 })
+    end ? DateTime.fromISO(end) : DateTime.fromISO(start).plus({ minutes: 10 }),
   ),
 });
 
 export const vacation = (
   startDay: string,
   endDay: string,
-  message?: string
+  message?: string,
 ): Record<string, DailySchedule> => {
   const schedule: DailySchedule = {
     message,
