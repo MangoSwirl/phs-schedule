@@ -1,16 +1,38 @@
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Period,
   getScheduleForWeek,
   type VisiblePeriod,
   DailySchedule,
   transformScheduleToDate,
 } from "@/lib/schedule";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import {
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DropdownMenuIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FeedbackForm } from "@/components/feedback-form";
+import { useState } from "react";
+import InfoMenu from "./InfoMenu";
 
 export default function Home({ params }: { params: { date: string } }) {
   // If the date is invalid, redirect to the current week
@@ -49,43 +71,46 @@ export default function Home({ params }: { params: { date: string } }) {
   }
 
   return (
-    <div className="h-screen flex flex-col justify-center">
-      <WeekNav date={weekStart} />
-      <main className="flex items-stretch justify-center flex-1 max-h-[800px]">
-        {schedule.map((schedule) => {
-          const { date, periods } = schedule;
+    <>
+      <div className="h-screen flex flex-col justify-center">
+        <WeekNav date={weekStart} />
+        <main className="flex items-stretch justify-center flex-1 max-h-[800px]">
+          {schedule.map((schedule) => {
+            const { date, periods } = schedule;
 
-          if (periods.length === 0 && date.isWeekend) {
-            return null;
-          }
-
-          const visiblePeriods: VisiblePeriod[] = [];
-
-          for (const period of periods) {
-            if (period.type !== "passing") {
-              visiblePeriods.push(period);
+            if (periods.length === 0 && date.isWeekend) {
+              return null;
             }
-          }
 
-          const dismissal = transformScheduleToDate(schedule, weekStart)
-            .periods[periods.length - 1]?.interval?.end;
+            const visiblePeriods: VisiblePeriod[] = [];
 
-          const minutesBeforeMax =
-            dismissal && latestDismissal
-              ? latestDismissal?.diff(dismissal, "minutes").minutes
-              : undefined;
+            for (const period of periods) {
+              if (period.type !== "passing") {
+                visiblePeriods.push(period);
+              }
+            }
 
-          return (
-            <DailyScheduleView
-              schedule={schedule}
-              date={date}
-              key={date.weekday}
-              minutesBeforeMax={minutesBeforeMax}
-            />
-          );
-        })}
-      </main>
-    </div>
+            const dismissal = transformScheduleToDate(schedule, weekStart)
+              .periods[periods.length - 1]?.interval?.end;
+
+            const minutesBeforeMax =
+              dismissal && latestDismissal
+                ? latestDismissal?.diff(dismissal, "minutes").minutes
+                : undefined;
+
+            return (
+              <DailyScheduleView
+                schedule={schedule}
+                date={date}
+                key={date.weekday}
+                minutesBeforeMax={minutesBeforeMax}
+              />
+            );
+          })}
+        </main>
+      </div>
+      <InfoMenu />
+    </>
   );
 }
 
@@ -120,6 +145,7 @@ function WeekNav({ date }: { date: DateTime }) {
 
 function PeriodBlock({ period }: { period: Period }) {
   const hasHappened = period.interval.isBefore(DateTime.now());
+  const isHappening = period.interval.contains(DateTime.now());
 
   if (period.type === "passing")
     return (
@@ -132,30 +158,41 @@ function PeriodBlock({ period }: { period: Period }) {
     );
 
   return (
-    <Button
+    <div
       className={cn(
-        "justify-center flex-col items-start py-0 px-3 min-h-11",
-        period.type === "break" && "flex-row items-center gap-2"
+        "flex justify-center flex-col items-stretch min-h-11",
+        period.type === "instructional" &&
+          "border border-neutral-200 rounded-md shadow-sm",
+        hasHappened && "opacity-50",
+        isHappening && period.type === "instructional" && "bg-neutral-100"
       )}
       style={{
         flex: period.interval.length("minutes") / 10,
       }}
-      variant={
-        (
-          {
-            instructional: "outline",
-            break: "ghost",
-          } as const
-        )[period.type]
-      }
-      disabled={hasHappened}
+      // variant={
+      //   (
+      //     {
+      //       instructional: "outline",
+      //       break: "ghost",
+      //     } as const
+      //   )[period.type]
+      // }
+      // disabled={hasHappened}
     >
-      <h2>{period.name}</h2>
-      <p className="font-normal">
-        {period.interval.start?.toFormat("h:mm")} -{" "}
-        {period.interval.end?.toFormat("h:mm")}
-      </p>
-    </Button>
+      <div
+        className={cn(
+          "flex flex-col items-start justify-center px-3",
+          period.type === "break" && "flex-row items-center gap-2",
+          isHappening && period.type === "break" && "border-l-2 border-purple"
+        )}
+      >
+        <h2 className="font-medium">{period.name}</h2>
+        <p className="text-sm">
+          {period.interval.start?.toFormat("h:mm")} -{" "}
+          {period.interval.end?.toFormat("h:mm")}
+        </p>
+      </div>
+    </div>
   );
 }
 
