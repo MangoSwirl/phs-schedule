@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Barlow } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "sonner";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={barlow.className}>
         {children}
+        <Toaster />
         <Analytics />
       </body>
     </html>
