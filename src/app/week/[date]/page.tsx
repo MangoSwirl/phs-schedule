@@ -169,15 +169,6 @@ function PeriodBlock({ period }: { period: Period }) {
       style={{
         flex: period.interval.length("minutes") / 10,
       }}
-      // variant={
-      //   (
-      //     {
-      //       instructional: "outline",
-      //       break: "ghost",
-      //     } as const
-      //   )[period.type]
-      // }
-      // disabled={hasHappened}
     >
       <div
         className={cn(
