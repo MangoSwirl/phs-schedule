@@ -17,6 +17,24 @@ import {
 } from "./schedule-helpers";
 
 export const dayOverrides: Record<string, DailySchedule> = {
+  "2024-08-12": {
+    message: "Shortened classes",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:10:00"),
+      passingPeriod("09:10:00"),
+      instructionalPeriod(2, "09:20:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:15:00"),
+      instructionalPeriod(3, "10:15:00", "10:55:00"),
+      passingPeriod("10:55:00"),
+      instructionalPeriod(4, "11:05:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      instructionalPeriod(5, "11:55:00", "12:35:00"),
+      lunchPeriod("12:35:00", "13:15:00"),
+      instructionalPeriod(6, "13:15:00", "13:55:00"),
+      passingPeriod("13:55:00"),
+      instructionalPeriod(7, "14:05:00", "14:45:00"),
+    ],
+  },
   "2024-08-13": { periods: mondayPeriods, message: "Monday schedule" },
   "2024-08-14": { periods: mondayPeriods, message: "Monday schedule" },
 
