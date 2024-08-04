@@ -49,7 +49,7 @@ export default function InfoMenu() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         {dialogType === "feedback" && (
           <FeedbackForm onSuccess={() => setDialogOpen(false)} />
         )}

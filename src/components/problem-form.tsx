@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 import { onReportProblem } from "@/lib/contact-actions";
 
@@ -39,6 +39,11 @@ export function ProblemForm(props: { onSuccess: () => void }) {
   });
 
   const [isPending, startTransition] = useTransition();
+
+  const { setFocus } = form;
+  useEffect(() => {
+    setTimeout(() => setFocus("body"), 10);
+  }, [setFocus]);
 
   const onSuccess = () => {
     console.log("success");
