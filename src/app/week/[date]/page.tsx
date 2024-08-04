@@ -34,7 +34,7 @@ import { FeedbackForm } from "@/components/feedback-form";
 import { useState } from "react";
 import InfoMenu from "@/components/InfoMenu";
 
-export default function Home({ params }: { params: { date: string } }) {
+export default function WeekView({ params }: { params: { date: string } }) {
   // If the date is invalid, redirect to the current week
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/week`);
