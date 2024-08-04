@@ -1,37 +1,16 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Period,
   getScheduleForWeek,
   type VisiblePeriod,
   DailySchedule,
   transformScheduleToDate,
 } from "@/lib/schedule";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import {
-  CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DropdownMenuIcon,
-  InfoCircledIcon,
-} from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FeedbackForm } from "@/components/feedback-form";
-import { useState } from "react";
 import InfoMenu from "@/components/InfoMenu";
 
 export default function WeekView({ params }: { params: { date: string } }) {
