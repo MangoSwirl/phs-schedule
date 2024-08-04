@@ -32,9 +32,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FeedbackForm } from "@/components/feedback-form";
 import { useState } from "react";
-import InfoMenu from "./InfoMenu";
+import InfoMenu from "@/components/InfoMenu";
 
-export default function Home({ params }: { params: { date: string } }) {
+export default function WeekView({ params }: { params: { date: string } }) {
   // If the date is invalid, redirect to the current week
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/week`);
@@ -104,6 +104,7 @@ export default function Home({ params }: { params: { date: string } }) {
                 date={date}
                 key={date.weekday}
                 minutesBeforeMax={minutesBeforeMax}
+                temporalSizing
               />
             );
           })}
@@ -143,7 +144,13 @@ function WeekNav({ date }: { date: DateTime }) {
   );
 }
 
-function PeriodBlock({ period }: { period: Period }) {
+export function PeriodBlock({
+  period,
+  temporalSizing,
+}: {
+  period: Period;
+  temporalSizing?: boolean;
+}) {
   const hasHappened = period.interval.isBefore(DateTime.now());
   const isHappening = period.interval.contains(DateTime.now());
 
@@ -151,9 +158,14 @@ function PeriodBlock({ period }: { period: Period }) {
     return (
       <div
         aria-hidden
-        style={{
-          flex: period.interval.length("minutes") / 10,
-        }}
+        style={
+          temporalSizing
+            ? {
+                flex: period.interval.length("minutes") / 10,
+              }
+            : {}
+        }
+        className={cn(!temporalSizing && "h-3")}
       />
     );
 
@@ -166,15 +178,16 @@ function PeriodBlock({ period }: { period: Period }) {
         hasHappened && "opacity-50",
         isHappening && period.type === "instructional" && "bg-neutral-100",
       )}
-      style={{
-        flex: period.interval.length("minutes") / 10,
-      }}
+      style={
+        temporalSizing ? { flex: period.interval.length("minutes") / 10 } : {}
+      }
     >
       <div
         className={cn(
           "flex flex-col items-start justify-center px-3 text-sm",
           period.type === "break" && "flex-row items-center gap-2",
           isHappening && period.type === "break" && "border-l-2 border-purple",
+          !temporalSizing && "p-3",
         )}
       >
         <h2 className="font-medium">{period.name}</h2>
@@ -187,14 +200,16 @@ function PeriodBlock({ period }: { period: Period }) {
   );
 }
 
-function DailyScheduleView({
+export function DailyScheduleView({
   schedule,
   date,
   minutesBeforeMax,
+  temporalSizing,
 }: {
   schedule: DailySchedule;
   date: DateTime;
   minutesBeforeMax?: number;
+  temporalSizing?: boolean;
 }) {
   const { periods } = schedule;
 
@@ -215,9 +230,13 @@ function DailyScheduleView({
       </div>
       <div className="flex flex-1 flex-col justify-center">
         {periods.map((period) => (
-          <PeriodBlock period={period} key={period.interval.toString()} />
+          <PeriodBlock
+            period={period}
+            key={period.interval.toString()}
+            temporalSizing={temporalSizing}
+          />
         ))}
-        {periods.length > 0 && !!minutesBeforeMax && (
+        {temporalSizing && periods.length > 0 && !!minutesBeforeMax && (
           <div style={{ flex: minutesBeforeMax / 10 }} aria-hidden />
         )}
         {periods.length === 0 && (
