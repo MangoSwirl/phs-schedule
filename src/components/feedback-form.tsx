@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { onSubmitFeedback } from "../lib/contact-actions";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { toast } from "sonner";
 
 export const feedbackFormSchema = z.object({
@@ -39,6 +39,11 @@ export function FeedbackForm(props: { onSuccess: () => void }) {
   });
 
   const [isPending, startTransition] = useTransition();
+
+  const { setFocus } = form;
+  useEffect(() => {
+    setTimeout(() => setFocus("body"), 10);
+  }, [setFocus]);
 
   const onSuccess = () => {
     console.log("success");
