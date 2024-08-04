@@ -1,4 +1,4 @@
-import InfoMenu from "@/app/week/[date]/InfoMenu";
+import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "@/app/week/[date]/page";
 import { Button } from "@/components/ui/button";
 import { getScheduleForDay } from "@/lib/schedule";

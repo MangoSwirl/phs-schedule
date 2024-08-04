@@ -32,7 +32,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { FeedbackForm } from "@/components/feedback-form";
 import { useState } from "react";
-import InfoMenu from "./InfoMenu";
+import InfoMenu from "@/components/InfoMenu";
 
 export default function Home({ params }: { params: { date: string } }) {
   // If the date is invalid, redirect to the current week
