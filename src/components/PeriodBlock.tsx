@@ -63,7 +63,7 @@ export function PeriodBlock({
           "flex flex-col items-start justify-center px-3 text-sm",
           period.type === "break" && "flex-row items-center gap-2",
           isHappening && period.type === "break" && "border-l-2 border-purple",
-          !temporalSizing && "p-3",
+          !temporalSizing && period.type === "instructional" && "p-3",
         )}
       >
         <h2 className="font-medium">{period.name}</h2>
