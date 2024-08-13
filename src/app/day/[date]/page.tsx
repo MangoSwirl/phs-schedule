@@ -1,7 +1,7 @@
 import InfoMenu from "@/components/InfoMenu";
-import { PeriodBlock } from "@/app/week/[date]/page";
+import { PeriodBlock } from "@/components/PeriodBlock";
 import { Button } from "@/components/ui/button";
-import { getScheduleForDay } from "@/lib/schedule";
+import { getScheduleForDay, intervalToPortable } from "@/lib/schedule";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
@@ -25,7 +25,13 @@ export default function DayView({ params }: { params: { date: string } }) {
       </div>
       <div className="mx-auto flex max-w-lg flex-1 flex-col justify-center px-8 pb-8">
         {periods.map((period) => (
-          <PeriodBlock period={period} key={period.interval.toString()} />
+          <PeriodBlock
+            portablePeriod={{
+              ...period,
+              interval: intervalToPortable(period.interval),
+            }}
+            key={period.interval.toString()}
+          />
         ))}
         {periods.length === 0 && (
           <p className="text-center text-neutral-500">No school</p>

@@ -18,6 +18,32 @@ export type InvisiblePeriod = {
 
 export type Period = VisiblePeriod | InvisiblePeriod;
 
+export type PortablePeriod = (
+  | Omit<VisiblePeriod, "interval">
+  | Omit<InvisiblePeriod, "interval">
+) & {
+  interval: PortableInterval;
+};
+
+export type PortableInterval = {
+  start?: string;
+  end?: string;
+};
+
+export function intervalToPortable(interval: Interval): PortableInterval {
+  return {
+    start: interval.start?.toISO(),
+    end: interval.end?.toISO(),
+  };
+}
+
+export function portableToInterval(interval: PortableInterval): Interval {
+  return Interval.fromDateTimes(
+    DateTime.fromISO(interval.start ?? ""),
+    DateTime.fromISO(interval.end ?? ""),
+  );
+}
+
 export type DailySchedule = {
   periods: Period[];
   message?: string;
