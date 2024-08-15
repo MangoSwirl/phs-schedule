@@ -123,7 +123,7 @@ function WeekNav({ date }: { date: DateTime }) {
   );
 }
 
-export function DailyScheduleView({
+function DailyScheduleView({
   schedule,
   date,
   minutesBeforeMax,
