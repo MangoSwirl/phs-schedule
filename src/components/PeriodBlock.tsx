@@ -48,7 +48,7 @@ export function PeriodBlock({
   return (
     <div
       className={cn(
-        "flex min-h-11 flex-col items-stretch justify-center",
+        "flex min-h-11 flex-col items-stretch justify-center transition duration-500",
         period.type === "instructional" &&
           "rounded-md border border-neutral-200 shadow-sm",
         hasHappened && "opacity-50",
@@ -60,7 +60,7 @@ export function PeriodBlock({
     >
       <div
         className={cn(
-          "flex flex-col items-start justify-center px-3 text-sm",
+          "flex flex-col items-start justify-center px-3 text-sm transition duration-500",
           period.type === "break" && "flex-row items-center gap-2",
           isHappening && period.type === "break" && "border-l-2 border-purple",
           !temporalSizing && period.type === "instructional" && "p-3",
