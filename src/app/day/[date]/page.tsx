@@ -45,7 +45,13 @@ export default function DayView({ params }: { params: { date: string } }) {
 function DayNav({ date }: { date: DateTime }) {
   return (
     <nav className="flex items-center justify-between gap-2">
-      <Button variant="ghost" size="icon" asChild aria-label="Yesterday">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Yesterday"
+        className="print:hidden"
+      >
         <Link
           href={`/day/${date.minus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch
@@ -56,7 +62,13 @@ function DayNav({ date }: { date: DateTime }) {
       <h1 className="min-w-[10rem] text-center font-medium text-neutral-900">
         {date.toFormat("EEEE, LLLL d")}
       </h1>
-      <Button variant="ghost" size="icon" asChild aria-label="Tomorrow">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Tomorrow"
+        className="print:hidden"
+      >
         <Link
           href={`/day/${date.plus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch

@@ -97,7 +97,13 @@ export default function WeekView({ params }: { params: { date: string } }) {
 function WeekNav({ date }: { date: DateTime }) {
   return (
     <nav className="flex items-center justify-center gap-2">
-      <Button variant="ghost" size="icon" asChild aria-label="Previous week">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Previous week"
+        className="print:hidden"
+      >
         <Link
           href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch
@@ -111,7 +117,13 @@ function WeekNav({ date }: { date: DateTime }) {
           {date.toFormat("LLLL d")}
         </span>
       </h1>
-      <Button variant="ghost" size="icon" asChild aria-label="Next week">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Next week"
+        className="print:hidden"
+      >
         <Link
           href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch
