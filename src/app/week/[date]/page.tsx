@@ -151,12 +151,7 @@ function DailyScheduleView({
   return (
     <div className="flex max-w-52 flex-1 flex-col justify-center p-2">
       <div className="flex h-12 flex-col justify-center">
-        {date && (
-          <h2 className="text-center">
-            {date.weekdayLong}{" "}
-            <span className="text-neutral-500">{date.toFormat("M/d")}</span>
-          </h2>
-        )}
+        {date && <h2 className="text-center">{date.weekdayLong} </h2>}
         {schedule.message && (
           <p className="text-center text-sm text-neutral-700">
             {schedule.message}
