@@ -81,10 +81,11 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(3, "10:00:00", "11:20:00"),
       brunchPeriod("11:20:00", "11:35:00"),
       instructionalPeriod(5, "11:35:00", "12:55:00"),
+      lunchPeriod("12:55:00", "13:25:00"),
     ],
   },
   "2024-09-06": {
-    message: "Back to school night",
+    message: "After back to school night",
     periods: [
       instructionalPeriod(2, "08:30:00", "09:50:00"),
       passingPeriod("09:50:00"),
