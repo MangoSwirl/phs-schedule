@@ -118,7 +118,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
 
-  "2024-09-24": {
+  "2024-09-25": {
     message: "Shelter in place",
     periods: evenPeriods,
   },
