@@ -8,16 +8,18 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
+import { CalendarSyncDialog } from "./calendary-sync-dialog";
 
 export default function InfoMenu() {
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [dialogType, setDialogType] = useState<"feedback" | "problem">(
-    "feedback",
-  );
+  const [dialogType, setDialogType] = useState<
+    "calendar" | "feedback" | "problem"
+  >("feedback");
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
@@ -29,10 +31,14 @@ export default function InfoMenu() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {/* <DropdownMenuItem>Add my classes</DropdownMenuItem>
-            <DropdownMenuItem>Add to calendar</DropdownMenuItem>
+            {/* <DropdownMenuItem>Add my classes</DropdownMenuItem> */}
+            <DialogTrigger asChild>
+              <DropdownMenuItem onClick={() => setDialogType("calendar")}>
+                Add to calendar
+              </DropdownMenuItem>
+            </DialogTrigger>
 
-            <DropdownMenuSeparator /> */}
+            <DropdownMenuSeparator />
 
             <DialogTrigger asChild>
               <DropdownMenuItem onClick={() => setDialogType("feedback")}>
@@ -49,6 +55,7 @@ export default function InfoMenu() {
         </DropdownMenu>
       </div>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
+        {dialogType === "calendar" && <CalendarSyncDialog />}
         {dialogType === "feedback" && (
           <FeedbackForm onSuccess={() => setDialogOpen(false)} />
         )}
