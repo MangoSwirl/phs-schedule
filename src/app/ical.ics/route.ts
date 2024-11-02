@@ -6,6 +6,7 @@ import {
 } from "@/lib/schedule";
 import * as ics from "ics";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 export async function GET() {
   const daysForYear: DailySchedule[] = [];
@@ -21,13 +22,12 @@ export async function GET() {
 
   const { error, value: events } = ics.createEvents(
     allPeriods
-      .filter((period) => period.type !== "passing")
       .filter((period) => period.type === "instructional")
       .map((period) => {
         return {
           start: period.interval.start!.toMillis(),
           end: period.interval.end!.toMillis(),
-          title: period.name,
+          title: z.object({ name: z.string() }).parse(period).name, // Will never be undefined but typescript isn't smart enough to know that yet
           uid: crypto.randomUUID(),
         };
       }),
