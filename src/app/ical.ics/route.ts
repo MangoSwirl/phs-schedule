@@ -11,7 +11,7 @@ import { z } from "zod";
 export async function GET() {
   const daysForYear: DailySchedule[] = [];
 
-  const totalDays = SCHOOL_YEAR_END.diff(SCHOOL_YEAR_START, "days").days;
+  const totalDays = SCHOOL_YEAR_END.diff(SCHOOL_YEAR_START, "days").days + 1;
 
   for (let i = 0; i < totalDays; i++) {
     const day = SCHOOL_YEAR_START.plus({ days: i });
