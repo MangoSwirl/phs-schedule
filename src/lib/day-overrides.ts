@@ -191,13 +191,14 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(3, "10:15:00", "10:55:00"),
       passingPeriod("10:55:00"),
       instructionalPeriod(4, "11:05:00", "11:45:00"),
+      passingPeriod("11:45:00"),
       {
         id: "drill-review",
         name: "Lockdown Review",
         type: "instructional",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:45:00"),
           DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:05:00"),
         ),
       },
       {
@@ -205,11 +206,10 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Lockdown",
         type: "instructional",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00"),
+          DateTime.fromISO("12:05:00"),
+          DateTime.fromISO("12:35:00"),
         ),
       },
-      passingPeriod("12:25:00"),
       instructionalPeriod(5, "12:35:00", "13:15:00"),
       lunchPeriod("13:15:00", "13:55:00"),
       instructionalPeriod(6, "13:55:00", "14:35:00"),
@@ -374,6 +374,92 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ...emptyDay,
   },
 
+  "2025-03-25": {
+    message: "CAASP Testing",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:35:00"),
+      brunchPeriod("9:35:00", "9:50:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Testing/Academy",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("09:50:00"),
+          DateTime.fromISO("11:20:00"),
+        ),
+      },
+      passingPeriod("11:20:00"),
+      instructionalPeriod(3, "11:30:00", "12:35:00"),
+      lunchPeriod("12:35:00", "13:15:00"),
+      instructionalPeriod(5, "13:15:00", "14:20:00"),
+      passingPeriod("14:20:00"),
+      instructionalPeriod(7, "14:30:00", "15:35:00"),
+    ],
+  },
+  "2025-03-26": {
+    message: "CAASP Testing",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "09:45:00"),
+      brunchPeriod("9:45:00", "10:00:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Testing/Academy",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("10:00:00"),
+          DateTime.fromISO("10:30:00"),
+        ),
+      },
+      passingPeriod("10:30:00"),
+      instructionalPeriod(4, "11:40:00", "12:55:00"),
+      lunchPeriod("12:55:00", "13:35:00"),
+      instructionalPeriod(6, "13:35:00", "14:50:00"),
+    ],
+  },
+
+  "2025-04-01": {
+    message: "CAASP Testing",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:35:00"),
+      brunchPeriod("9:35:00", "9:50:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Testing/Academy",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("09:50:00"),
+          DateTime.fromISO("11:20:00"),
+        ),
+      },
+      passingPeriod("11:20:00"),
+      instructionalPeriod(3, "11:30:00", "12:35:00"),
+      lunchPeriod("12:35:00", "13:15:00"),
+      instructionalPeriod(5, "13:15:00", "14:20:00"),
+      passingPeriod("14:20:00"),
+      instructionalPeriod(7, "14:30:00", "15:35:00"),
+    ],
+  },
+  "2025-04-02": {
+    message: "CAASP Testing",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "09:45:00"),
+      brunchPeriod("9:45:00", "10:00:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Testing/Academy",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("10:00:00"),
+          DateTime.fromISO("10:30:00"),
+        ),
+      },
+      passingPeriod("10:30:00"),
+      instructionalPeriod(4, "11:40:00", "12:55:00"),
+      lunchPeriod("12:55:00", "13:35:00"),
+      instructionalPeriod(6, "13:35:00", "14:50:00"),
+    ],
+  },
+
   ...vacation("2025-04-07", "2025-04-11", "Spring Break"),
 
   "2025-04-28": {
@@ -386,13 +472,14 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(3, "10:15:00", "10:55:00"),
       passingPeriod("10:55:00"),
       instructionalPeriod(4, "11:05:00", "11:45:00"),
+      passingPeriod("11:45:00"),
       {
         id: "drill-review",
         type: "instructional",
         name: "Drill Review",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:45:00"),
           DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:05:00"),
         ),
       },
       {
@@ -400,11 +487,10 @@ export const dayOverrides: Record<string, DailySchedule> = {
         type: "instructional",
         name: "Drill",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00"),
+          DateTime.fromISO("12:05:00"),
+          DateTime.fromISO("12:35:00"),
         ),
       },
-      passingPeriod("12:25:00"),
       instructionalPeriod(5, "12:35:00", "13:15:00"),
       lunchPeriod("13:15:00", "13:55:00"),
       instructionalPeriod(6, "13:55:00", "14:35:00"),

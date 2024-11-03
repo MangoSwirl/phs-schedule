@@ -88,12 +88,12 @@ export function transformScheduleToDate(
     ...period,
     interval: Interval.fromDateTimes(
       day.set({
-        hour: period.interval.start!.hour,
-        minute: period.interval.start!.minute,
+        hour: period.interval.start?.hour,
+        minute: period.interval.start?.minute,
       }),
       day.set({
-        hour: period.interval.end!.hour,
-        minute: period.interval.end!.minute,
+        hour: period.interval.end?.hour,
+        minute: period.interval.end?.minute,
       }),
     ),
   }));
