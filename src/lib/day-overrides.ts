@@ -472,13 +472,14 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(3, "10:15:00", "10:55:00"),
       passingPeriod("10:55:00"),
       instructionalPeriod(4, "11:05:00", "11:45:00"),
+      passingPeriod("11:45:00"),
       {
         id: "drill-review",
         type: "instructional",
         name: "Drill Review",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:45:00"),
           DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:05:00"),
         ),
       },
       {
@@ -486,11 +487,10 @@ export const dayOverrides: Record<string, DailySchedule> = {
         type: "instructional",
         name: "Drill",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00"),
+          DateTime.fromISO("12:05:00"),
+          DateTime.fromISO("12:35:00"),
         ),
       },
-      passingPeriod("12:25:00"),
       instructionalPeriod(5, "12:35:00", "13:15:00"),
       lunchPeriod("13:15:00", "13:55:00"),
       instructionalPeriod(6, "13:55:00", "14:35:00"),
