@@ -223,6 +223,19 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ...emptyDay,
   },
 
+  "2024-11-15": {
+    message: "Inverted Academy",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:15:00"),
+      instructionalPeriod(4, "10:15:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      academyPeriod("11:55:00", "12:40:00"),
+      lunchPeriod("12:40:00", "13:20:00"),
+      instructionalPeriod(6, "13:20:00", "14:50:00"),
+    ],
+  },
+
   ...vacation("2024-11-25", "2024-11-29", "Thanksgiving Break"),
 
   "2024-12-16": {
