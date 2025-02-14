@@ -327,6 +327,19 @@ export const dayOverrides: Record<string, DailySchedule> = {
 
   ...vacation("2025-02-17", "2025-02-21", "Ski Week"),
 
+  "2025-02-28": {
+    message: "Career Day",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:55:00"),
+      brunchPeriod("09:55:00", "10:10:00"),
+      academyPeriod("10:10:00", "11:10:00"),
+      passingPeriod("11:10:00"),
+      instructionalPeriod(4, "11:20:00", "12:45:00"),
+      lunchPeriod("12:45:00", "13:25:00"),
+      instructionalPeriod(6, "13:25:00", "14:50:00"),
+    ],
+  },
+
   "2025-03-03": {
     message: "Reverse Lockdown",
     periods: [
