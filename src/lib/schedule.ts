@@ -65,6 +65,10 @@ export function getScheduleForDay(day: DateTime): DailySchedule {
 
   // If the day is in the dayOverrides, use that
   if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
+    if (day.weekday === 2) {
+      console.log(dayOverrides[day.toFormat("yyyy-LL-dd")]);
+    }
+
     return transformScheduleToDate(
       dayOverrides[day.toFormat("yyyy-LL-dd")],
       day,
@@ -84,19 +88,21 @@ export function transformScheduleToDate(
   schedule: DailySchedule,
   day: DateTime,
 ): DailySchedule {
-  const transformedPeriods = schedule.periods.map((period) => ({
-    ...period,
-    interval: Interval.fromDateTimes(
-      day.set({
-        hour: period.interval.start?.hour,
-        minute: period.interval.start?.minute,
-      }),
-      day.set({
-        hour: period.interval.end?.hour,
-        minute: period.interval.end?.minute,
-      }),
-    ),
-  }));
+  const transformedPeriods = schedule.periods.map(function (period) {
+    return {
+      ...period,
+      interval: Interval.fromDateTimes(
+        day.set({
+          hour: period.interval.start?.hour,
+          minute: period.interval.start?.minute,
+        }),
+        day.set({
+          hour: period.interval.end?.hour,
+          minute: period.interval.end?.minute,
+        }),
+      ),
+    };
+  });
 
   return {
     ...schedule,
