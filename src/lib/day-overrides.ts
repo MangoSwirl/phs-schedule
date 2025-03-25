@@ -401,10 +401,10 @@ export const dayOverrides: Record<string, DailySchedule> = {
   },
 
   "2025-03-25": {
-    message: "CAASP Testing",
+    message: "CAASPP Testing",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:35:00"),
-      brunchPeriod("9:35:00", "9:50:00"),
+      brunchPeriod("09:35:00", "09:50:00"),
       {
         id: "academy",
         type: "instructional",
@@ -423,17 +423,17 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
   "2025-03-26": {
-    message: "CAASP Testing",
+    message: "CAASPP Testing",
     periods: [
       instructionalPeriod(2, "08:30:00", "09:45:00"),
-      brunchPeriod("9:45:00", "10:00:00"),
+      brunchPeriod("09:45:00", "10:00:00"),
       {
         id: "academy",
         type: "instructional",
         name: "Testing/Academy",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("10:00:00"),
-          DateTime.fromISO("10:30:00"),
+          DateTime.fromISO("11:30:00"),
         ),
       },
       passingPeriod("10:30:00"),
@@ -444,10 +444,10 @@ export const dayOverrides: Record<string, DailySchedule> = {
   },
 
   "2025-04-01": {
-    message: "CAASP Testing",
+    message: "CAASPP Testing",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:35:00"),
-      brunchPeriod("9:35:00", "9:50:00"),
+      brunchPeriod("09:35:00", "09:50:00"),
       {
         id: "academy",
         type: "instructional",
@@ -466,17 +466,17 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
   "2025-04-02": {
-    message: "CAASP Testing",
+    message: "CAASPP Testing",
     periods: [
       instructionalPeriod(2, "08:30:00", "09:45:00"),
-      brunchPeriod("9:45:00", "10:00:00"),
+      brunchPeriod("09:45:00", "10:00:00"),
       {
         id: "academy",
         type: "instructional",
         name: "Testing/Academy",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("10:00:00"),
-          DateTime.fromISO("10:30:00"),
+          DateTime.fromISO("11:30:00"),
         ),
       },
       passingPeriod("10:30:00"),
