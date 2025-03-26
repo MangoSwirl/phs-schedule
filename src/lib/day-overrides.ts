@@ -488,6 +488,35 @@ export const dayOverrides: Record<string, DailySchedule> = {
 
   ...vacation("2025-04-07", "2025-04-11", "Spring Break"),
 
+  "2025-04-21": {
+    message: "Testing",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:00:00"),
+      passingPeriod("09:00:00"),
+      instructionalPeriod(2, "09:10:00", "09:40:00"),
+      passingPeriod("09:40:00"),
+      instructionalPeriod(3, "09:50:00", "10:20:00"),
+      brunchPeriod("10:20:00", "10:35:00"),
+      instructionalPeriod(4, "10:35:00", "11:05:00"),
+      passingPeriod("11:05:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Extended Academy",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("11:15:00"),
+          DateTime.fromISO("12:55:00"),
+        ),
+      },
+      lunchPeriod("12:55:00", "13:35:00"),
+      instructionalPeriod(5, "13:35:00", "14:05:00"),
+      passingPeriod("14:05:00"),
+      instructionalPeriod(6, "14:15:00", "14:45:00"),
+      passingPeriod("14:45:00"),
+      instructionalPeriod(7, "14:55:00", "15:25:00"),
+    ],
+  },
+
   "2025-04-28": {
     message: "Secondary location fire drill",
     periods: [
