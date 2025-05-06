@@ -13,7 +13,10 @@ export const metadata: Metadata = {
   title: "PHS Schedule",
   description: "An interactive schedule for students at Piedmont High School.",
   icons: {
-    icon: [{ url: "/icon.svg" }, { url: "/icon-dark.svg" }],
+    icon: [
+      { url: "/icon.svg" },
+      { url: "/icon-dark.svg", media: "(prefers-color-scheme: dark)" },
+    ],
   },
 };
 

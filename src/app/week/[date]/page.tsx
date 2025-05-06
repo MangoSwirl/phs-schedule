@@ -1,40 +1,19 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Period,
   getScheduleForWeek,
   type VisiblePeriod,
   DailySchedule,
   transformScheduleToDate,
+  intervalToPortable,
 } from "@/lib/schedule";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import {
-  CalendarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DropdownMenuIcon,
-  InfoCircledIcon,
-} from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FeedbackForm } from "@/components/feedback-form";
-import { useState } from "react";
-import InfoMenu from "./InfoMenu";
+import InfoMenu from "@/components/InfoMenu";
+import { PeriodBlock } from "../../../components/PeriodBlock";
 
-export default function Home({ params }: { params: { date: string } }) {
+export default function WeekView({ params }: { params: { date: string } }) {
   // If the date is invalid, redirect to the current week
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/week`);
@@ -104,6 +83,7 @@ export default function Home({ params }: { params: { date: string } }) {
                 date={date}
                 key={date.weekday}
                 minutesBeforeMax={minutesBeforeMax}
+                temporalSizing
               />
             );
           })}
@@ -117,7 +97,13 @@ export default function Home({ params }: { params: { date: string } }) {
 function WeekNav({ date }: { date: DateTime }) {
   return (
     <nav className="flex items-center justify-center gap-2">
-      <Button variant="ghost" size="icon" asChild aria-label="Previous week">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Previous week"
+        className="print:hidden"
+      >
         <Link
           href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch
@@ -131,7 +117,13 @@ function WeekNav({ date }: { date: DateTime }) {
           {date.toFormat("LLLL d")}
         </span>
       </h1>
-      <Button variant="ghost" size="icon" asChild aria-label="Next week">
+      <Button
+        variant="ghost"
+        size="icon"
+        asChild
+        aria-label="Next week"
+        className="print:hidden"
+      >
         <Link
           href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
           prefetch
@@ -143,58 +135,16 @@ function WeekNav({ date }: { date: DateTime }) {
   );
 }
 
-function PeriodBlock({ period }: { period: Period }) {
-  const hasHappened = period.interval.isBefore(DateTime.now());
-  const isHappening = period.interval.contains(DateTime.now());
-
-  if (period.type === "passing")
-    return (
-      <div
-        aria-hidden
-        style={{
-          flex: period.interval.length("minutes") / 10,
-        }}
-      />
-    );
-
-  return (
-    <div
-      className={cn(
-        "flex min-h-11 flex-col items-stretch justify-center",
-        period.type === "instructional" &&
-          "rounded-md border border-neutral-200 shadow-sm",
-        hasHappened && "opacity-50",
-        isHappening && period.type === "instructional" && "bg-neutral-100",
-      )}
-      style={{
-        flex: period.interval.length("minutes") / 10,
-      }}
-    >
-      <div
-        className={cn(
-          "flex flex-col items-start justify-center px-3 text-sm",
-          period.type === "break" && "flex-row items-center gap-2",
-          isHappening && period.type === "break" && "border-l-2 border-purple",
-        )}
-      >
-        <h2 className="font-medium">{period.name}</h2>
-        <p>
-          {period.interval.start?.toFormat("h:mm")} -{" "}
-          {period.interval.end?.toFormat("h:mm")}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function DailyScheduleView({
   schedule,
   date,
   minutesBeforeMax,
+  temporalSizing,
 }: {
   schedule: DailySchedule;
   date: DateTime;
   minutesBeforeMax?: number;
+  temporalSizing?: boolean;
 }) {
   const { periods } = schedule;
 
@@ -215,9 +165,16 @@ function DailyScheduleView({
       </div>
       <div className="flex flex-1 flex-col justify-center">
         {periods.map((period) => (
-          <PeriodBlock period={period} key={period.interval.toString()} />
+          <PeriodBlock
+            portablePeriod={{
+              ...period,
+              interval: intervalToPortable(period.interval),
+            }}
+            key={period.interval.toString()}
+            temporalSizing={temporalSizing}
+          />
         ))}
-        {periods.length > 0 && !!minutesBeforeMax && (
+        {temporalSizing && periods.length > 0 && !!minutesBeforeMax && (
           <div style={{ flex: minutesBeforeMax / 10 }} aria-hidden />
         )}
         {periods.length === 0 && (
