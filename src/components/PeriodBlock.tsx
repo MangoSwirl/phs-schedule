@@ -48,11 +48,10 @@ export function PeriodBlock({
   return (
     <div
       className={cn(
-        "flex min-h-11 flex-col items-stretch justify-center transition duration-500",
+        "flex min-h-11 items-stretch justify-center transition duration-500",
         period.type === "instructional" &&
-          "rounded-md border border-neutral-200 shadow-sm",
+          "justify-stretch rounded-md border border-neutral-200 shadow-sm",
         hasHappened && "opacity-50",
-        isHappening && period.type === "instructional" && "bg-neutral-100",
       )}
       style={
         temporalSizing ? { flex: period.interval.length("minutes") / 10 } : {}
@@ -60,18 +59,50 @@ export function PeriodBlock({
     >
       <div
         className={cn(
-          "flex flex-col items-start justify-center px-3 text-sm transition duration-500",
-          period.type === "break" && "flex-row items-center gap-2",
-          isHappening && period.type === "break" && "border-l-2 border-purple",
+          "flex flex-row items-stretch justify-stretch gap-2 px-3 text-sm transition duration-500",
+          period.type === "break" && "justify-center",
+          isHappening &&
+            period.type === "break" &&
+            "border-l-2 border-purple",
           !temporalSizing && period.type === "instructional" && "p-3",
+          isHappening && period.type === "instructional" && "pl-2"
         )}
       >
-        <h2 className="font-medium">{period.name}</h2>
-        <p>
-          {period.interval.start?.toFormat("h:mm")} -{" "}
-          {period.interval.end?.toFormat("h:mm")}
-        </p>
+        {period.type === "instructional" && (
+          <ProgressIndicator
+            progress={
+              (now.toMillis() - (period.interval.start?.toMillis() ?? 0)) /
+              period.interval.length("milliseconds")
+            }
+          />
+        )}
+        <div
+          className={cn(
+            "flex flex-col items-start justify-center",
+            period.type === "break" &&
+              "flex w-auto flex-row items-center gap-2",
+          )}
+        >
+          <h2 className="font-medium">{period.name}</h2>
+          <p>
+            {period.interval.start?.toFormat("h:mm")} -{" "}
+            {period.interval.end?.toFormat("h:mm")}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
+
+const ProgressIndicator = ({ progress }: { progress: number }) => {
+  if (progress <= 0 || progress >= 1) return null;
+
+  return (
+    <div className="relative my-2 w-[5px] overflow-hidden rounded-full bg-gray-300">
+      <div
+        className="absolute left-0 right-0 top-0 rounded-full bg-purple transition"
+        style={{ height: Math.round(progress * 100) + "%" }}
+      />
+    </div>
+  );
+};
