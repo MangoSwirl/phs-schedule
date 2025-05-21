@@ -569,7 +569,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
         name: "Day on the Green",
         interval: Interval.fromDateTimes(
           DateTime.fromISO("13:30:00"),
-          DateTime.fromISO("15:30:00"),
+          DateTime.fromISO("15:00:00"),
         ),
       },
     ],
