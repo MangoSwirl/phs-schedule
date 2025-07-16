@@ -243,12 +243,23 @@ export const evenPeriods: Period[] = [
 
 export const emptyDay: DailySchedule = { periods: [] };
 
-export const defaultSchedule: Record<WeekdayNumbers, DailySchedule> = {
-  1: { periods: mondayPeriods },
-  2: { periods: oddPeriods },
-  3: { periods: evenPeriods },
-  4: { periods: oddPeriods },
-  5: { periods: evenPeriods },
-  6: emptyDay,
-  7: emptyDay,
-};
+export const standardSchedules = [
+  {
+    name: "Monday Schedule",
+    displayName: "Monday schedule",
+    periods: mondayPeriods,
+    days: [1],
+  },
+  {
+    name: "T/Th Schedule",
+    displayName: "Odd periods",
+    periods: oddPeriods,
+    days: [2, 4],
+  },
+  {
+    name: "W/F Schedule",
+    displayName: "Even periods",
+    periods: evenPeriods,
+    days: [3, 5],
+  },
+];

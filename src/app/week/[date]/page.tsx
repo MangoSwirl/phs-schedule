@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  getScheduleForWeek,
   type VisiblePeriod,
   DailySchedule,
   transformScheduleToDate,
@@ -12,8 +11,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "../../../components/PeriodBlock";
+import { getScheduleForWeek } from "@/redis/days";
 
-export default function WeekView({ params }: { params: { date: string } }) {
+export default async function WeekView({
+  params,
+}: {
+  params: { date: string };
+}) {
   // If the date is invalid, redirect to the current week
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/week`);
@@ -30,7 +34,7 @@ export default function WeekView({ params }: { params: { date: string } }) {
 
   const weekStart = DateTime.fromFormat(params.date, "yyyy-LL-dd");
 
-  const schedule = getScheduleForWeek(weekStart);
+  const schedule = await getScheduleForWeek(weekStart);
   let latestDismissal: DateTime | null = weekStart.set({
     hour: 14,
     minute: 30,

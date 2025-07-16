@@ -1,6 +1,4 @@
-import { Interval, DateTime, WeekdayNumbers, Settings } from "luxon";
-import { dayOverrides } from "./day-overrides";
-import { emptyDay, defaultSchedule } from "./schedule-templates";
+import { Interval, DateTime, Settings } from "luxon";
 
 Settings.defaultZone = "America/Los_Angeles";
 
@@ -52,37 +50,6 @@ export type DailySchedule = {
 export const SCHOOL_YEAR_START = DateTime.fromISO("2024-08-12");
 export const SCHOOL_YEAR_END = DateTime.fromISO("2025-06-05");
 
-export function getScheduleForDay(day: DateTime): DailySchedule {
-  // No school if it's before the start of the school year
-  if (day < SCHOOL_YEAR_START) {
-    return transformScheduleToDate(emptyDay, day);
-  }
-
-  // No school if it's after the end of the school year
-  if (day > SCHOOL_YEAR_END) {
-    return transformScheduleToDate(emptyDay, day);
-  }
-
-  // If the day is in the dayOverrides, use that
-  if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
-    if (day.weekday === 2) {
-      console.log(dayOverrides[day.toFormat("yyyy-LL-dd")]);
-    }
-
-    return transformScheduleToDate(
-      dayOverrides[day.toFormat("yyyy-LL-dd")],
-      day,
-    );
-  }
-
-  return transformScheduleToDate(
-    day.weekday in defaultSchedule
-      ? defaultSchedule[day.weekday as WeekdayNumbers]
-      : emptyDay,
-    day,
-  );
-}
-
 /// Returns a `DailySchedule` where each interval has the same time of day but uses the given date
 export function transformScheduleToDate(
   schedule: DailySchedule,
@@ -108,19 +75,4 @@ export function transformScheduleToDate(
     ...schedule,
     periods: transformedPeriods,
   };
-}
-
-export function getScheduleForWeek(
-  week: DateTime,
-): (DailySchedule & { date: DateTime })[] {
-  const weekStart = week.startOf("week");
-
-  const schedule: (DailySchedule & { date: DateTime })[] = [];
-
-  for (let i = 0; i < 7; i++) {
-    const day = weekStart.plus({ days: i });
-    schedule.push({ ...getScheduleForDay(day), date: day });
-  }
-
-  return schedule;
 }
