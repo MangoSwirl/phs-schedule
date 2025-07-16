@@ -247,18 +247,21 @@ export const standardSchedules = [
   {
     name: "Monday Schedule",
     displayName: "Monday schedule",
+    aiDescription: "a Monday schedule, containing all periods (1-7)",
     periods: mondayPeriods,
     days: [1],
   },
   {
     name: "T/Th Schedule",
     displayName: "Odd periods",
+    aiDescription: "a Tuesday/Thursday schedule, containing odd periods,",
     periods: oddPeriods,
     days: [2, 4],
   },
   {
     name: "W/F Schedule",
     displayName: "Even periods",
+    aiDescription: "a Wednesday/Friday schedule, containing even periods,",
     periods: evenPeriods,
     days: [3, 5],
   },

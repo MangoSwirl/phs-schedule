@@ -1,6 +1,11 @@
 import { env } from "@/env";
 import ical from "ical";
-import { DailySchedule, SCHOOL_YEAR_END, SCHOOL_YEAR_START } from "./schedule";
+import {
+  DailySchedule,
+  Period,
+  SCHOOL_YEAR_END,
+  SCHOOL_YEAR_START,
+} from "./schedule";
 import { DateTime, Interval } from "luxon";
 import { z } from "zod";
 import { emptyDay, standardSchedules } from "./schedule-templates";
@@ -16,6 +21,12 @@ type EventStub = {
   title: string;
   description?: string;
   date: string;
+};
+
+type UsedMessage = {
+  date: string;
+  inputTitle: string;
+  outputMessage: string;
 };
 
 export async function importCalendar() {
@@ -125,11 +136,23 @@ export async function importCalendar() {
     }
   }
 
+  const usedMessages: UsedMessage[] = [];
+
   for (const day of Object.values(allDays)) {
-    setDailySchedule(
-      DateTime.fromISO(day.date),
-      await eventStubToSchedule(day),
-    );
+    const schedule = await eventStubToSchedule(day, usedMessages);
+
+    if (
+      schedule.message &&
+      !schedule.message.toLocaleLowerCase().includes("special schedule")
+    ) {
+      usedMessages.push({
+        date: day.date,
+        inputTitle: day.title,
+        outputMessage: schedule.message,
+      });
+    }
+
+    setDailySchedule(DateTime.fromISO(day.date), schedule);
   }
 
   for (const interval of schoolYearInterval.splitBy({ day: 1 })) {
@@ -144,7 +167,10 @@ export async function importCalendar() {
   // console.log(Object.keys(allDays).join("\n"));
 }
 
-async function eventStubToSchedule(stub: EventStub): Promise<DailySchedule> {
+async function eventStubToSchedule(
+  stub: EventStub,
+  usedMessages: UsedMessage[],
+): Promise<DailySchedule> {
   const defaultSchedule = standardSchedules.find(
     (s) => s.name === stub.title.trim(),
   );
@@ -161,20 +187,29 @@ async function eventStubToSchedule(stub: EventStub): Promise<DailySchedule> {
       message,
     };
   } else {
-    const schedule = await stubToScheduleAI(stub);
+    const schedule = await stubToScheduleAI(stub, usedMessages);
 
     console.log({ schedule });
     return schedule;
   }
 }
 
-async function stubToScheduleAI(stub: EventStub): Promise<DailySchedule> {
+async function stubToScheduleAI(
+  stub: EventStub,
+  usedMessages: UsedMessage[],
+): Promise<DailySchedule> {
+  const dateTime = DateTime.fromISO(stub.date);
+  const standardSchedule = standardSchedules.find((d) =>
+    d.days.includes(dateTime.weekday),
+  );
+
   const { object } = await generateObject({
     model: model,
     schema: dailyScheduleSchema,
     mode: "json",
     maxRetries: 5,
     experimental_repairText: async ({ text }) => {
+      console.log(text);
       // If the model gives an empty code block at the end, ignore it.
       let t = text;
 
@@ -192,9 +227,7 @@ async function stubToScheduleAI(stub: EventStub): Promise<DailySchedule> {
     prompt: `
     ${JSON.stringify(stub)}
 
-    The above was a single-day exception to a high school bell schedule. Your job is to transcribe it into the provided json format.
-
-    **IMPORTANT: The \`interval\` field must only EVER contain 24-hour time, so you'll need to convert it.**
+    Please help! My school's bell schedule is different today for a specific reason. It would normally be ${standardSchedule?.aiDescription}, but today it's NOT. it's changed to the above. Your job is to transcribe it into the provided json format.
     
     You should use the following values for \`name\` and \`id\` fields wherever possible, but it's okay to make up your own if none of the options fit (eg. "5th Period Final" for the human readable name and "finals-5" for the id). Instructional and break periods should ALWAYS have an \`id\`, even if you have to make one up. It has to be a real string, not null or undefined. Passing periods should NEVER have an \`id\`.
     | id       | name       | type          |
@@ -210,20 +243,122 @@ async function stubToScheduleAI(stub: EventStub): Promise<DailySchedule> {
     | brunch   | Brunch     | break         |
     | academy  | Academy    | instructional |
     |          |            | passing       |
-    In the \`message\` field, include a 1 or 2 word (~3 at the very max), HUMAN-READABLE (appears only in UI, include spaces, make it look nice) title that either (a) highlights why this change in schedule exists (eg. "Spring Rally", "CAASPP Testing", "Finals") or (b) explains what the structure is (eg. "Even Periods" or "Monday Schedule"). Do not try to do both as this may make the message too long. In many cases it will be identical to the provided \`title\` field but will usually be shorter, cutting nonsensical filler like "SP-Day".
-    Passing periods: sometimes they're explicitly given, other times you need to infer that they exist based on the gaps in time between periods. You should always *explicitly output* them in your json whenever you see a gap. It's very important that you do this for the UI.
-    If there is ever a passing period immediately following a \`"break"\`-type period (lunch or brunch), disregard the passing period and EXTEND the \`"break"\` period's end time to compensate, such that the brunch or lunch feeds directly into the next period with no gap in between. Even if there isn't an _explicit_ passing period, there might still be a gap in time. If this is the case, you should still expand a brunch or lunch period to end at the same time the next instructional period starts. Do this ONLY for the boundary between break periods and instructional periods. Two INSTRUCTIONAL periods should ALWAYS have passing periods between them, unless the timing given in the schedule makes you SUPER confident that isn't the case.
-    If it seems like school is off for the day, still include a message but use an empty array for the periods.
+    In the \`message\` field, include a 1 or 2 word (~3 at the very max), HUMAN-READABLE (appears only in UI, include spaces, make it look nice), HELPFUL title that either (a) highlights why this change in schedule exists (eg. "Spring Rally", "CAASPP Testing", "Finals") or if you can't figure out why, (b) explains what the structure is (eg. "Even Periods", "Monday Schedule", "Shorter Classes"). Do not try to do both as this may make the message too long. In many cases it will be identical to the provided \`title\` field but will usually be shorter. When trying to figure out what the change is for, first come up with what you think any abbreviations in the given title stand for (eg. SP = special, BTSN = back to school night). If all the title tells you is that it's a "special schedule" then you need to try EXTRA HARD to figure out what the CHANGES to the schedule are and describe them in the title. Today is a ${dateTime.weekdayLong}, which, if this day were normal, would have this schedule:
+    ${JSON.stringify(standardSchedule?.periods)}
 
+    Use the following order of priority when determining what kind of message to use, moving to the next option only when you believe an option with a higher priority would not be as helpful:
+    1. Describes WHY there's a deviation (eg. Back to School Night).
+    2. Describes a change to WHICH periods are present (eg. "Odd Periods" or "Fire Drill")
+    3. Describes a change to the ORDER of periods (eg. Inverted Academy)
+    4. Describes a change to the DURATION of periods (eg. "Shorter Classes" or "Extended Academy")
+
+    **Forbidden messages**
+    - NEVER say "Special Schedule" or even the word "Special", "SP", or "Modified" unless it's the ONLY THING YOU CAN THINK OF because it's WAY TOO VAGUE. We KNOW that it's a modified schedule already, so that wouldn't be helpful. Instead, say _how_ or _why_ it's been modified. When you're stuck, you should always try to figure out what the differences between the changed schedule and the normal one are. Compare the _order_ and the _timing_ of the two schedules.
+    - Breaks (brunch and lunch) NEVER change in length. If you think they did, then you didn't take the passing period into account and you need to make your tables again. Brunch is always 15 minutes if you consider the passing period right after.
+    - Today would _normally_ be ${standardSchedule?.aiDescription} but today is DIFFERENT, so you shouldn't even CONSIDER calling it that.
+    - "Sequential Periods" -- just give a range, like 1-5 or All Periods (the school has 7 periods total)
+    - Any message longer than 22 characters as it won't fit in the UI
+
+
+    To keep naming consistent, here some messages you've used so far: ${JSON.stringify(usedMessages)}
+    
+    If it seems like school is off for the day, use an empty array for the periods. Don't say "No school" as the message as that already appears in the UI when there aren't any periods. Either give _why_ there's no school or omit the message altogether.
+
+    ---
+    
     IF YOU DON'T REMEMBER THE FOLLOWING TWO THINGS, EVERYTHING WILL BREAK.
     REMEMBER: The schedule is provided in 12 hour time, but YOU MUST CONVERT THE INTERVALS TO 24 HOUR TIME.
-    
     Intervals must include minutes, hours, and seconds, each component having exactly two digits (pad with a zero if necessary).
     
+    ---
 
-    Think it out first (explicitly write out all the times and their conversions into 24hr), do at least 3 iterations until you're confident you're matching all of the above criteria. As a last check, make sure you don't have any passing periods immediately following break periods (brunch OR lunch, check BOTH, brunch is easy to miss), as explained above. Then once you're satisfied, output your final JSON in a code block. Your final result should be the last code block you send.
+    Do these EXACT steps in the EXACT order. Don't write any JSON until _after_ you've iterated on your message:
+    1. Make a table for both, the original and modified schedules, including period names, start and end times, and durations. Omit passing periods from these tables and extend brunch and lunch so that they have the same length as the unmodified schedule.
+    2. List out what's different in which periods are present
+    3. To find changes to the order of periods, make one table listing out the first period of each schedule, the second, third, etc. Then list differences in the ordering you find.
+    4. If the periods are in the same order, use the tables from step 1 to list out any changes to the durations of periods.
+    5. Iterate on your \`message\`. Each time you iterate, come up with a _stellar_ message, evaluate how helpful it is based on each of the above criteria, and make changes if could be classified as vague or redundant. Be _super careful_ if the modified schedule is similar to the original.
+    6. Convert all the intervals in the modified schedule into 24-hr time with two digits each for hours, minutes, and seconds.
+    7. Start writing out the modified schedule to match the JSON format. Do multiple iterations if necesary, then output your final JSON in a code block. Your final result should be the last code block you send. ONLY OUTPUT THE MODIFIED SCHEDULE, NOT THE ORIGINAL.
     `,
   });
 
-  return deserializeSchedule(JSON.stringify(object));
+  const rawSchedule = deserializeSchedule(JSON.stringify(object));
+  return postProcessSchedule(rawSchedule);
+}
+
+function postProcessSchedule(schedule: DailySchedule): DailySchedule {
+  // First, fill any gaps with passing periods
+  const periodsWithPassingPeriods = fillGapsWithPassingPeriods(
+    schedule.periods,
+  );
+
+  // Then, extend break periods to absorb following passing periods
+  const processedPeriods: Period[] = [];
+
+  for (let i = 0; i < periodsWithPassingPeriods.length; i++) {
+    const period = periodsWithPassingPeriods[i];
+    const nextPeriod = periodsWithPassingPeriods[i + 1];
+
+    // If this is a break period and the next period is a passing period,
+    // extend this break period and skip the passing period
+    if (period.type === "break" && nextPeriod?.type === "passing") {
+      const followingPeriod = periodsWithPassingPeriods[i + 2];
+      if (followingPeriod) {
+        // Extend the break period to the start of the following instructional period
+        processedPeriods.push({
+          ...period,
+          interval: Interval.fromDateTimes(
+            period.interval.start!,
+            followingPeriod.interval.start!,
+          ),
+        });
+        // Skip the next two periods (passing and the one we just extended to)
+        i += 2;
+        // Add the following period
+        processedPeriods.push(followingPeriod);
+      } else {
+        // No following period, just add the break period as-is
+        processedPeriods.push(period);
+        i++; // Skip the passing period
+      }
+    } else {
+      processedPeriods.push(period);
+    }
+  }
+
+  return {
+    ...schedule,
+    periods: processedPeriods,
+  };
+}
+
+function fillGapsWithPassingPeriods(periods: Period[]): Period[] {
+  if (periods.length === 0) return periods;
+
+  const result: Period[] = [];
+
+  for (let i = 0; i < periods.length; i++) {
+    const currentPeriod = periods[i];
+    const nextPeriod = periods[i + 1];
+
+    result.push(currentPeriod);
+
+    // Check if there's a gap between this period and the next
+    if (
+      nextPeriod &&
+      currentPeriod.interval.end! < nextPeriod.interval.start!
+    ) {
+      // Add a passing period to fill the gap
+      result.push({
+        type: "passing",
+        interval: Interval.fromDateTimes(
+          currentPeriod.interval.end!,
+          nextPeriod.interval.start!,
+        ),
+      });
+    }
+  }
+
+  return result;
 }
