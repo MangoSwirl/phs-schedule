@@ -25,7 +25,7 @@ export const dailyScheduleSchema = z.object({
   message: z.string().optional(),
 });
 
-function serializeSchedule(schedule: DailySchedule): string {
+export function serializeSchedule(schedule: DailySchedule): string {
   const obj: z.infer<typeof dailyScheduleSchema> = {
     ...schedule,
     periods: schedule.periods.map((p) => ({
@@ -46,7 +46,7 @@ function serializeSchedule(schedule: DailySchedule): string {
   return JSON.stringify(obj);
 }
 
-function deserializeSchedule(str: any): DailySchedule {
+export function deserializeSchedule(str: any): DailySchedule {
   const obj = dailyScheduleSchema.parse(JSON.parse(str));
 
   return {
