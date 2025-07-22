@@ -108,20 +108,28 @@ export const { POST } = serve(async (context) => {
       };
     });
   }
-  // Final cleanup and revalidation
-  await context.run("finalize-import", async () => {
-    const clearUpdatedDates = await clearUnusedDays(allEvents);
+  // Clear unused days
+  const clearedUpdatedDates = await context.run(
+    "clear-unused-days",
+    async () => {
+      return await clearUnusedDays(allEvents);
+    },
+  );
 
-    // Update the stored hash
+  // Update the stored hash
+  await context.run("update-calendar-hash", async () => {
     const newHash = calculateCalendarHash(icsString);
     await setStoredCalendarHash(newHash);
+  });
 
+  // Invalidate changed pages
+  await context.run("invalidate-pages", async () => {
     // Combine all updated dates and invalidate only those that changed
     const allUpdatedDates = Array.from(
       new Set([
         ...updatedDates,
         ...workflowState.llmUpdatedDates,
-        ...clearUpdatedDates,
+        ...clearedUpdatedDates,
       ]),
     );
 
@@ -132,7 +140,6 @@ export const { POST } = serve(async (context) => {
       }
     }
   });
-
   return {
     message: `Calendar imported successfully (${allEvents.length} events processed, ${llmEvents.length} needed LLM processing)`,
     imported: true,
