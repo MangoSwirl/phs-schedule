@@ -1,9 +1,9 @@
 import {
   DailySchedule,
-  getScheduleForDay,
   SCHOOL_YEAR_END,
   SCHOOL_YEAR_START,
 } from "@/lib/schedule";
+import { getDailySchedule } from "@/redis/days";
 import * as ics from "ics";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -15,7 +15,7 @@ export async function GET() {
 
   for (let i = 0; i < totalDays; i++) {
     const day = SCHOOL_YEAR_START.plus({ days: i });
-    daysForYear.push(getScheduleForDay(day));
+    daysForYear.push(await getDailySchedule(day));
   }
 
   const allPeriods = daysForYear.map((schedule) => schedule.periods).flat();
