@@ -7,10 +7,11 @@ import {
 } from "@/redis/calendar-hash";
 import {
   parseCalendarEvents,
-  processStandardEvents,
+  processStandardEventsBatch,
   processSingleLLMEvent,
   clearUnusedDays,
   UsedMessage,
+  EventStub,
 } from "@/lib/import-calendar";
 import { revalidateSchedulePages } from "@/lib/revalidation";
 import { DateTime } from "luxon";
@@ -45,18 +46,37 @@ export const { POST } = serve(async (context) => {
     };
   }
 
-  // Parse calendar events and process standard schedules
-  const { allEvents, llmEvents, updatedDates } = await context.run(
-    "parse-and-process-standard",
-    async () => {
-      const allEvents = await parseCalendarEvents();
+  // Parse calendar events first
+  const allEvents = await context.run("parse-calendar", async () => {
+    return await parseCalendarEvents();
+  });
 
-      // Process all standard schedules at once (fast)
-      const { needsLLM, updatedDates } = await processStandardEvents(allEvents);
+  // Process standard schedules in batches to avoid timeout
+  const batchSize = 50;
+  const batches: EventStub[][] = [];
+  for (let i = 0; i < allEvents.length; i += batchSize) {
+    batches.push(allEvents.slice(i, i + batchSize));
+  }
 
-      return { allEvents, llmEvents: needsLLM, updatedDates };
-    },
-  );
+  let allNeedsLLM: EventStub[] = [];
+  let allStandardUpdatedDates: string[] = [];
+
+  for (let i = 0; i < batches.length; i++) {
+    const batchResult = await context.run(
+      `process-standard-batch-${i}`,
+      async () => {
+        return await processStandardEventsBatch(batches[i], batchSize);
+      },
+    );
+
+    allNeedsLLM.push(...batchResult.needsLLM);
+    allStandardUpdatedDates.push(...batchResult.updatedDates);
+  }
+
+  const { llmEvents, updatedDates } = {
+    llmEvents: allNeedsLLM,
+    updatedDates: allStandardUpdatedDates,
+  };
 
   // Process LLM events one at a time, maintaining message context
   let workflowState = await context.run(

@@ -141,7 +141,7 @@ export async function parseCalendarEvents(): Promise<EventStub[]> {
   return Object.values(allDays);
 }
 
-// Process events that don't need LLM calls (standard schedules)
+// Process events that don't need LLM calls (standard schedules) in batches
 export async function processStandardEvents(
   events: EventStub[],
 ): Promise<{ needsLLM: EventStub[]; updatedDates: string[] }> {
@@ -181,6 +181,26 @@ export async function processStandardEvents(
   }
 
   return { needsLLM, updatedDates };
+}
+
+// Process a batch of standard events (for workflow batching)
+export async function processStandardEventsBatch(
+  events: EventStub[],
+  batchSize: number = 50,
+): Promise<{ needsLLM: EventStub[]; updatedDates: string[] }> {
+  const allNeedsLLM: EventStub[] = [];
+  const allUpdatedDates: string[] = [];
+
+  // Process events in batches
+  for (let i = 0; i < events.length; i += batchSize) {
+    const batch = events.slice(i, i + batchSize);
+    const result = await processStandardEvents(batch);
+
+    allNeedsLLM.push(...result.needsLLM);
+    allUpdatedDates.push(...result.updatedDates);
+  }
+
+  return { needsLLM: allNeedsLLM, updatedDates: allUpdatedDates };
 }
 
 // Process a single event that needs LLM calls
