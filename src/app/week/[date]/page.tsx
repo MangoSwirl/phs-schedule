@@ -14,13 +14,14 @@ import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "../../../components/PeriodBlock";
 import { getScheduleForWeek } from "@/redis/days";
 
-export const revalidate = 3600 * 14 * 7; // Revalidate every week
-export const dynamicParams = false; // Only allow pre-generated params
+export const revalidate = 7 * 24 * 60 * 60; // Revalidate every week
+export const dynamicParams = true; // Allow any date - ISR will handle caching
 
 export async function generateStaticParams() {
   const params = [];
 
-  // Generate only Monday dates for the school year
+  // Pre-generate Monday dates for school year for optimal ISR performance
+  // dynamicParams = true allows other dates to be generated on-demand
   let current = SCHOOL_YEAR_START.startOf("week"); // Get Monday of first week
   const end = SCHOOL_YEAR_END.startOf("week").plus({ weeks: 2 }); // Go a bit past end
 
@@ -31,6 +32,9 @@ export async function generateStaticParams() {
     current = current.plus({ weeks: 1 }); // Move to next Monday
   }
 
+  console.log(
+    `Generated ${params.length} week params from ${SCHOOL_YEAR_START.startOf("week").toISODate()} to ${end.toISODate()}`,
+  );
   return params;
 }
 

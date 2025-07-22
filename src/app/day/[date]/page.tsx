@@ -11,13 +11,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
 
-export const revalidate = 3600 * 14 * 7; // Revalidate every week
-export const dynamicParams = false; // Only allow pre-generated params
+export const revalidate = 7 * 24 * 60 * 60; // Revalidate every week
+export const dynamicParams = true; // Allow any date - ISR will handle caching
 
 export async function generateStaticParams() {
   const params = [];
 
-  // Generate routes for every single day of the school year
+  // Pre-generate routes for school year dates for optimal ISR performance
+  // dynamicParams = true allows other dates to be generated on-demand
   let currentDate = SCHOOL_YEAR_START;
 
   while (currentDate <= SCHOOL_YEAR_END) {
@@ -32,7 +33,6 @@ export async function generateStaticParams() {
   );
   return params;
 }
-
 export default async function DayView({
   params,
 }: {
