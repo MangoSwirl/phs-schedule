@@ -1,26 +1,52 @@
 import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "@/components/PeriodBlock";
 import { Button } from "@/components/ui/button";
-import { getScheduleForDay, intervalToPortable } from "@/lib/schedule";
+import {
+  intervalToPortable,
+  SCHOOL_YEAR_START,
+  SCHOOL_YEAR_END,
+} from "@/lib/schedule";
+import { getDailySchedule } from "@/redis/days";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
-export default function DayView({ params }: { params: { date: string } }) {
-  // If the date is invalid, redirect to the current day
-  if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
-    redirect(`/day`);
+export const revalidate = 3600 * 14 * 7; // Revalidate every week
+export const dynamicParams = false; // Only allow pre-generated params
+
+export async function generateStaticParams() {
+  const params = [];
+
+  // Generate routes for every single day of the school year
+  let currentDate = SCHOOL_YEAR_START;
+
+  while (currentDate <= SCHOOL_YEAR_END) {
+    params.push({
+      date: currentDate.toFormat("yyyy-LL-dd"),
+    });
+    currentDate = currentDate.plus({ days: 1 });
   }
 
-  const date = DateTime.fromFormat(params.date, "yyyy-LL-dd");
+  console.log(
+    `Generated ${params.length} day params from ${SCHOOL_YEAR_START.toISODate()} to ${SCHOOL_YEAR_END.toISODate()}`,
+  );
+  return params;
+}
 
-  const { periods, message } = getScheduleForDay(date);
+export default async function DayView({
+  params,
+}: {
+  params: { date: string };
+}) {
+  // Since dynamicParams = false, we can assume the date is valid and pre-generated
+  const parsedDate = DateTime.fromFormat(params.date, "yyyy-LL-dd");
+
+  const { periods, message } = await getDailySchedule(parsedDate);
 
   return (
     <div>
       <div className="sticky left-0 right-0 top-0 flex flex-col items-center bg-white/40 p-4 backdrop-blur-sm">
-        <DayNav date={date} />
+        <DayNav date={parsedDate} />
         {message && <p className="text-center text-neutral-700">{message}</p>}
       </div>
       <div className="mx-auto flex max-w-lg flex-1 flex-col justify-center px-8 pb-8">

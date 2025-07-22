@@ -4,36 +4,43 @@ import {
   DailySchedule,
   transformScheduleToDate,
   intervalToPortable,
+  SCHOOL_YEAR_START,
+  SCHOOL_YEAR_END,
 } from "@/lib/schedule";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "../../../components/PeriodBlock";
 import { getScheduleForWeek } from "@/redis/days";
+
+export const revalidate = 3600 * 14 * 7; // Revalidate every week
+export const dynamicParams = false; // Only allow pre-generated params
+
+export async function generateStaticParams() {
+  const params = [];
+
+  // Generate only Monday dates for the school year
+  let current = SCHOOL_YEAR_START.startOf("week"); // Get Monday of first week
+  const end = SCHOOL_YEAR_END.startOf("week").plus({ weeks: 2 }); // Go a bit past end
+
+  while (current <= end) {
+    params.push({
+      date: current.toFormat("yyyy-LL-dd"),
+    });
+    current = current.plus({ weeks: 1 }); // Move to next Monday
+  }
+
+  return params;
+}
 
 export default async function WeekView({
   params,
 }: {
   params: { date: string };
 }) {
-  // If the date is invalid, redirect to the current week
-  if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
-    redirect(`/week`);
-  }
-
-  // If the date isn't the first day of the week, redirect to the first day of its week
-  if (DateTime.fromFormat(params.date, "yyyy-LL-dd").weekday !== 1) {
-    redirect(
-      `/week/${DateTime.fromFormat(params.date, "yyyy-LL-dd")
-        .startOf("week")
-        .toFormat("yyyy-LL-dd")}`,
-    );
-  }
-
+  // Since dynamicParams = false, we can assume the date is valid and pre-generated
   const weekStart = DateTime.fromFormat(params.date, "yyyy-LL-dd");
-
   const schedule = await getScheduleForWeek(weekStart);
   let latestDismissal: DateTime | null = weekStart.set({
     hour: 14,
