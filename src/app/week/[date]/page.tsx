@@ -13,8 +13,9 @@ import Link from "next/link";
 import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "../../../components/PeriodBlock";
 import { getScheduleForWeek } from "@/redis/days";
+import { notFound } from "next/navigation";
 
-export const revalidate = 7 * 24 * 60 * 60; // Revalidate every week
+export const revalidate = 3600; // Revalidate every hour
 export const dynamicParams = true; // Allow any date - ISR will handle caching
 
 export async function generateStaticParams() {
@@ -43,8 +44,13 @@ export default async function WeekView({
 }: {
   params: { date: string };
 }) {
-  // Since dynamicParams = false, we can assume the date is valid and pre-generated
+  // Validate the date format and return 404 for invalid dates
   const weekStart = DateTime.fromFormat(params.date, "yyyy-LL-dd");
+
+  if (!weekStart.isValid) {
+    notFound();
+  }
+
   const schedule = await getScheduleForWeek(weekStart);
   let latestDismissal: DateTime | null = weekStart.set({
     hour: 14,

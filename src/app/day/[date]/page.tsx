@@ -10,8 +10,9 @@ import { getDailySchedule } from "@/redis/days";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DateTime } from "luxon";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-export const revalidate = 7 * 24 * 60 * 60; // Revalidate every week
+export const revalidate = 604800; // Revalidate every week
 export const dynamicParams = true; // Allow any date - ISR will handle caching
 
 export async function generateStaticParams() {
@@ -38,8 +39,12 @@ export default async function DayView({
 }: {
   params: { date: string };
 }) {
-  // Since dynamicParams = false, we can assume the date is valid and pre-generated
+  // Validate the date format and return 404 for invalid dates
   const parsedDate = DateTime.fromFormat(params.date, "yyyy-LL-dd");
+
+  if (!parsedDate.isValid) {
+    notFound();
+  }
 
   const { periods, message } = await getDailySchedule(parsedDate);
 
