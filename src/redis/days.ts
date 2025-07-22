@@ -64,14 +64,27 @@ export function deserializeSchedule(str: any): DailySchedule {
 export async function setDailySchedule(
   day: DateTime,
   schedule: DailySchedule | null,
-): Promise<void> {
+): Promise<boolean> {
+  const key = `day:${day.toISODate()}`;
+
   if (schedule === null) {
-    await redis.del(`day:${day.toISODate()}`);
+    // For deletion, we need to check if the key existed
+    const existed = await redis.exists(key);
+    if (existed) {
+      await redis.del(key);
+      return true; // Changed from something to null
+    }
+    return false; // Was already null
   } else {
-    await redis.set(`day:${day.toISODate()}`, serializeSchedule(schedule));
+    const newValue = serializeSchedule(schedule);
+    // Use SET with GET option to atomically set new value and get old value
+    const oldValue = await redis.set(key, newValue, { get: true });
+
+    // If oldValue is null, the key didn't exist before (changed from null to something)
+    // If oldValue exists but is different, it changed
+    return oldValue === null || oldValue !== newValue;
   }
 }
-
 export async function getDailySchedule(day: DateTime): Promise<DailySchedule> {
   const str = await redis.get(`day:${day.toISODate()}`);
 

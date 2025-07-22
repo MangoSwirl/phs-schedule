@@ -13,6 +13,7 @@ import {
   UsedMessage,
 } from "@/lib/import-calendar";
 import { revalidateSchedulePages } from "@/lib/revalidation";
+import { DateTime } from "luxon";
 
 export const { POST } = serve(async (context) => {
   const { icsString, shouldImport } = await context.run(
@@ -45,39 +46,71 @@ export const { POST } = serve(async (context) => {
   }
 
   // Parse calendar events and process standard schedules
-  const { allEvents, llmEvents } = await context.run(
+  const { allEvents, llmEvents, updatedDates } = await context.run(
     "parse-and-process-standard",
     async () => {
       const allEvents = await parseCalendarEvents();
 
       // Process all standard schedules at once (fast)
-      const llmEvents = await processStandardEvents(allEvents);
+      const { needsLLM, updatedDates } = await processStandardEvents(allEvents);
 
-      return { allEvents, llmEvents };
+      return { allEvents, llmEvents: needsLLM, updatedDates };
     },
   );
 
   // Process LLM events one at a time, maintaining message context
-  let usedMessages: UsedMessage[] = [];
+  let workflowState = await context.run(
+    "initialize-llm-processing",
+    async () => {
+      return {
+        usedMessages: [] as UsedMessage[],
+        llmUpdatedDates: [] as string[],
+      };
+    },
+  );
 
   for (let i = 0; i < llmEvents.length; i++) {
     const event = llmEvents[i];
 
-    usedMessages = await context.run(`process-llm-event-${i}`, async () => {
-      return await processSingleLLMEvent(event, usedMessages);
+    workflowState = await context.run(`process-llm-event-${i}`, async () => {
+      const result = await processSingleLLMEvent(
+        event,
+        workflowState.usedMessages,
+      );
+
+      const newLlmUpdatedDates = result.hasChanged
+        ? [...workflowState.llmUpdatedDates, event.date]
+        : workflowState.llmUpdatedDates;
+
+      return {
+        usedMessages: result.newUsedMessages,
+        llmUpdatedDates: newLlmUpdatedDates,
+      };
     });
   }
-
   // Final cleanup and revalidation
   await context.run("finalize-import", async () => {
-    await clearUnusedDays(allEvents);
+    const clearUpdatedDates = await clearUnusedDays(allEvents);
 
     // Update the stored hash
     const newHash = calculateCalendarHash(icsString);
     await setStoredCalendarHash(newHash);
 
-    // Revalidate all schedule-related pages
-    revalidateSchedulePages();
+    // Combine all updated dates and invalidate only those that changed
+    const allUpdatedDates = Array.from(
+      new Set([
+        ...updatedDates,
+        ...workflowState.llmUpdatedDates,
+        ...clearUpdatedDates,
+      ]),
+    );
+
+    if (allUpdatedDates.length > 0) {
+      for (const dateStr of allUpdatedDates) {
+        const date = DateTime.fromISO(dateStr);
+        revalidateSchedulePages(date);
+      }
+    }
   });
 
   return {

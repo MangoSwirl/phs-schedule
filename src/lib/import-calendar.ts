@@ -144,8 +144,9 @@ export async function parseCalendarEvents(): Promise<EventStub[]> {
 // Process events that don't need LLM calls (standard schedules)
 export async function processStandardEvents(
   events: EventStub[],
-): Promise<EventStub[]> {
+): Promise<{ needsLLM: EventStub[]; updatedDates: string[] }> {
   const needsLLM: EventStub[] = [];
+  const updatedDates: string[] = [];
 
   for (const event of events) {
     const defaultSchedule = standardSchedules.find(
@@ -166,21 +167,27 @@ export async function processStandardEvents(
         message,
       };
 
-      await setDailySchedule(DateTime.fromISO(event.date), schedule);
+      const hasChanged = await setDailySchedule(
+        DateTime.fromISO(event.date),
+        schedule,
+      );
+      if (hasChanged) {
+        updatedDates.push(event.date);
+      }
     } else {
       // This needs LLM processing
       needsLLM.push(event);
     }
   }
 
-  return needsLLM;
+  return { needsLLM, updatedDates };
 }
 
 // Process a single event that needs LLM calls
 export async function processSingleLLMEvent(
   event: EventStub,
   usedMessages: UsedMessage[],
-): Promise<UsedMessage[]> {
+): Promise<{ newUsedMessages: UsedMessage[]; hasChanged: boolean }> {
   const newUsedMessages = [...usedMessages];
 
   const schedule = await stubToScheduleAI(event, newUsedMessages);
@@ -196,30 +203,39 @@ export async function processSingleLLMEvent(
     });
   }
 
-  await setDailySchedule(DateTime.fromISO(event.date), schedule);
+  const hasChanged = await setDailySchedule(
+    DateTime.fromISO(event.date),
+    schedule,
+  );
 
-  return newUsedMessages;
+  return { newUsedMessages, hasChanged };
 }
 
 // Clear schedules for days not in the calendar
 export async function clearUnusedDays(
   processedEvents: EventStub[],
-): Promise<void> {
+): Promise<string[]> {
   const schoolYearInterval = Interval.fromDateTimes(
     SCHOOL_YEAR_START,
     SCHOOL_YEAR_END,
   );
 
   const processedDates = new Set(processedEvents.map((e) => e.date));
+  const updatedDates: string[] = [];
 
   for (const interval of schoolYearInterval.splitBy({ day: 1 })) {
     const date = interval.start!;
     const iso = date.toISODate();
 
     if (!processedDates.has(iso)) {
-      await setDailySchedule(date, null);
+      const hasChanged = await setDailySchedule(date, null);
+      if (hasChanged) {
+        updatedDates.push(iso);
+      }
     }
   }
+
+  return updatedDates;
 }
 
 async function stubToScheduleAI(
