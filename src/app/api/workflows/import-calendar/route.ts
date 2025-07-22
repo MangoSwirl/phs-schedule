@@ -79,34 +79,20 @@ export const { POST } = serve(async (context) => {
   };
 
   // Process LLM events one at a time, maintaining message context
-  let workflowState = await context.run(
-    "initialize-llm-processing",
-    async () => {
-      return {
-        usedMessages: [] as UsedMessage[],
-        llmUpdatedDates: [] as string[],
-      };
-    },
-  );
+  let usedMessages: UsedMessage[] = [];
+  let llmUpdatedDates: string[] = [];
 
   for (let i = 0; i < llmEvents.length; i++) {
     const event = llmEvents[i];
 
-    workflowState = await context.run(`process-llm-event-${i}`, async () => {
-      const result = await processSingleLLMEvent(
-        event,
-        workflowState.usedMessages,
-      );
-
-      const newLlmUpdatedDates = result.hasChanged
-        ? [...workflowState.llmUpdatedDates, event.date]
-        : workflowState.llmUpdatedDates;
-
-      return {
-        usedMessages: result.newUsedMessages,
-        llmUpdatedDates: newLlmUpdatedDates,
-      };
+    const result = await context.run(`process-llm-event-${i}`, async () => {
+      return await processSingleLLMEvent(event, usedMessages);
     });
+
+    usedMessages = result.newUsedMessages;
+    if (result.hasChanged) {
+      llmUpdatedDates.push(event.date);
+    }
   }
   // Clear unused days
   const clearedUpdatedDates = await context.run(
@@ -126,11 +112,7 @@ export const { POST } = serve(async (context) => {
   await context.run("invalidate-pages", async () => {
     // Combine all updated dates and invalidate only those that changed
     const allUpdatedDates = Array.from(
-      new Set([
-        ...updatedDates,
-        ...workflowState.llmUpdatedDates,
-        ...clearedUpdatedDates,
-      ]),
+      new Set([...updatedDates, ...llmUpdatedDates, ...clearedUpdatedDates]),
     );
 
     if (allUpdatedDates.length > 0) {
