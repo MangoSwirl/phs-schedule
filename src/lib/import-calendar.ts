@@ -14,6 +14,7 @@ import {
   deserializeSchedule,
   setDailySchedule,
 } from "@/redis/days";
+import { getCachedLLMResult, setCachedLLMResult } from "@/redis/llm-cache";
 import { generateObject } from "ai";
 import { model } from "@/lib/ai";
 
@@ -225,6 +226,11 @@ async function stubToScheduleAI(
   stub: EventStub,
   usedMessages: UsedMessage[],
 ): Promise<DailySchedule> {
+  const cachedResult = await getCachedLLMResult(stub.date, stub);
+  if (cachedResult) {
+    return cachedResult;
+  }
+
   const dateTime = DateTime.fromISO(stub.date);
   const standardSchedule = standardSchedules.find((d) =>
     d.days.includes(dateTime.weekday),
@@ -311,7 +317,11 @@ async function stubToScheduleAI(
   });
 
   const rawSchedule = deserializeSchedule(JSON.stringify(object));
-  return postProcessSchedule(rawSchedule);
+  const processedSchedule = postProcessSchedule(rawSchedule);
+
+  await setCachedLLMResult(stub.date, stub, processedSchedule);
+
+  return processedSchedule;
 }
 
 function postProcessSchedule(schedule: DailySchedule): DailySchedule {
