@@ -8,35 +8,36 @@ import {
 } from "./schedule";
 import { DateTime, Interval } from "luxon";
 import { z } from "zod";
-import { emptyDay, standardSchedules } from "./schedule-templates";
+import { standardSchedules } from "./schedule-templates";
 import {
   dailyScheduleSchema,
   deserializeSchedule,
   setDailySchedule,
 } from "@/redis/days";
-import { generateObject, generateText } from "ai";
+import { generateObject } from "ai";
 import { model } from "@/lib/ai";
 
-type EventStub = {
-  title: string;
-  description?: string;
-  date: string;
-};
-
-type UsedMessage = {
+export type UsedMessage = {
   date: string;
   inputTitle: string;
   outputMessage: string;
 };
 
-export async function importCalendar() {
+export type EventStub = {
+  title: string;
+  description?: string;
+  date: string;
+};
+
+// Parse the iCal content and extract events for the school year
+export async function parseCalendarEvents(): Promise<EventStub[]> {
   const calendarResponse = await fetch(env.IMPORT_CALENDAR_URL);
 
   if (!calendarResponse.ok) throw Error("Failed to fetch calendar");
 
   const icsString = await calendarResponse.text();
 
-  const data = await ical.parseICS(icsString);
+  const data = ical.parseICS(icsString);
 
   const schoolYearInterval = Interval.fromDateTimes(
     SCHOOL_YEAR_START,
@@ -45,7 +46,7 @@ export async function importCalendar() {
 
   const allDays: Record<string, EventStub> = {};
 
-  for (const [k, event] of Object.entries(data)) {
+  for (const [, event] of Object.entries(data)) {
     if (event.type !== "VEVENT") continue;
     if (event.start === undefined) continue;
     if (event.end === undefined) continue;
@@ -136,61 +137,87 @@ export async function importCalendar() {
     }
   }
 
-  const usedMessages: UsedMessage[] = [];
+  return Object.values(allDays);
+}
 
-  for (const day of Object.values(allDays)) {
-    const schedule = await eventStubToSchedule(day, usedMessages);
+// Process events that don't need LLM calls (standard schedules)
+export async function processStandardEvents(
+  events: EventStub[],
+): Promise<EventStub[]> {
+  const needsLLM: EventStub[] = [];
 
-    if (
-      schedule.message &&
-      !schedule.message.toLocaleLowerCase().includes("special schedule")
-    ) {
-      usedMessages.push({
-        date: day.date,
-        inputTitle: day.title,
-        outputMessage: schedule.message,
-      });
+  for (const event of events) {
+    const defaultSchedule = standardSchedules.find(
+      (s) => s.name === event.title.trim(),
+    );
+
+    if (defaultSchedule) {
+      // This is a standard schedule, process it immediately
+      let message;
+      if (
+        !defaultSchedule.days.includes(DateTime.fromISO(event.date).weekday)
+      ) {
+        message = defaultSchedule.displayName;
+      }
+
+      const schedule: DailySchedule = {
+        periods: defaultSchedule.periods,
+        message,
+      };
+
+      await setDailySchedule(DateTime.fromISO(event.date), schedule);
+    } else {
+      // This needs LLM processing
+      needsLLM.push(event);
     }
-
-    setDailySchedule(DateTime.fromISO(day.date), schedule);
   }
+
+  return needsLLM;
+}
+
+// Process a single event that needs LLM calls
+export async function processSingleLLMEvent(
+  event: EventStub,
+  usedMessages: UsedMessage[],
+): Promise<UsedMessage[]> {
+  const newUsedMessages = [...usedMessages];
+
+  const schedule = await stubToScheduleAI(event, newUsedMessages);
+
+  if (
+    schedule.message &&
+    !schedule.message.toLocaleLowerCase().includes("special schedule")
+  ) {
+    newUsedMessages.push({
+      date: event.date,
+      inputTitle: event.title,
+      outputMessage: schedule.message,
+    });
+  }
+
+  await setDailySchedule(DateTime.fromISO(event.date), schedule);
+
+  return newUsedMessages;
+}
+
+// Clear schedules for days not in the calendar
+export async function clearUnusedDays(
+  processedEvents: EventStub[],
+): Promise<void> {
+  const schoolYearInterval = Interval.fromDateTimes(
+    SCHOOL_YEAR_START,
+    SCHOOL_YEAR_END,
+  );
+
+  const processedDates = new Set(processedEvents.map((e) => e.date));
 
   for (const interval of schoolYearInterval.splitBy({ day: 1 })) {
     const date = interval.start!;
     const iso = date.toISODate();
 
-    if (!(iso in allDays)) {
+    if (!processedDates.has(iso)) {
       await setDailySchedule(date, null);
     }
-  }
-
-  // console.log(Object.keys(allDays).join("\n"));
-}
-
-async function eventStubToSchedule(
-  stub: EventStub,
-  usedMessages: UsedMessage[],
-): Promise<DailySchedule> {
-  const defaultSchedule = standardSchedules.find(
-    (s) => s.name === stub.title.trim(),
-  );
-
-  if (defaultSchedule) {
-    let message;
-
-    if (!defaultSchedule.days.includes(DateTime.fromISO(stub.date).weekday)) {
-      message = defaultSchedule.displayName;
-    }
-
-    return {
-      periods: defaultSchedule.periods,
-      message,
-    };
-  } else {
-    const schedule = await stubToScheduleAI(stub, usedMessages);
-
-    console.log({ schedule });
-    return schedule;
   }
 }
 
