@@ -325,7 +325,7 @@ async function stubToScheduleAI(
     - NEVER say "Special Schedule" or even the word "Special", "SP", or "Modified" unless it's the ONLY THING YOU CAN THINK OF because it's WAY TOO VAGUE. We KNOW that it's a modified schedule already, so that wouldn't be helpful. Instead, say _how_ or _why_ it's been modified. When you're stuck, you should always try to figure out what the differences between the changed schedule and the normal one are. Compare the _order_ and the _timing_ of the two schedules.
     - Breaks (brunch and lunch) NEVER change in length. If you think they did, then you didn't take the passing period into account and you need to make your tables again. Brunch is always 15 minutes if you consider the passing period right after.
     - Today would _normally_ be ${standardSchedule?.aiDescription} but today is DIFFERENT, so you shouldn't even CONSIDER calling it that.
-    - "Sequential Periods" -- just give a range, like 1-5 or All Periods (the school has 7 periods total)
+    - "Sequential Periods" or "Consecutive Periods" -- just give a range, like 1-5 or All Periods (the school has 7 periods total)
     - Any message longer than 22 characters as it won't fit in the UI
 
 
@@ -344,7 +344,7 @@ async function stubToScheduleAI(
     Do these EXACT steps in the EXACT order. Don't write any JSON until _after_ you've iterated on your message:
     1. Make a table for both, the original and modified schedules, including period names, start and end times, and durations. Omit passing periods from these tables and extend brunch and lunch so that they have the same length as the unmodified schedule.
     2. List out what's different in which periods are present
-    3. To find changes to the order of periods, make one table listing out the first period of each schedule, the second, third, etc. Then list differences in the ordering you find.
+    3. If the schedules have the same periods, find any changes in the order using this _exact_ process: make one unified table with a column for each schedule and rows for the first period of each schedule, the second, etc. Then list differences in the ordering you find.
     4. If the periods are in the same order, use the tables from step 1 to list out any changes to the durations of periods.
     5. Iterate on your \`message\`. Each time you iterate, come up with a _stellar_ message, evaluate how helpful it is based on each of the above criteria, and make changes if could be classified as vague or redundant. Be _super careful_ if the modified schedule is similar to the original.
     6. Convert all the intervals in the modified schedule into 24-hr time with two digits each for hours, minutes, and seconds.
