@@ -14,6 +14,7 @@ import {
   EventStub,
 } from "@/lib/import-calendar";
 import { revalidateSchedulePages } from "@/lib/revalidation";
+import { resend } from "@/lib/resend";
 import { DateTime } from "luxon";
 
 export const { POST } = serve(async (context) => {
@@ -109,7 +110,7 @@ export const { POST } = serve(async (context) => {
   });
 
   // Invalidate changed pages
-  await context.run("invalidate-pages", async () => {
+  const allUpdatedDates = await context.run("invalidate-pages", async () => {
     // Combine all updated dates and invalidate only those that changed
     const allUpdatedDates = Array.from(
       new Set([...updatedDates, ...llmUpdatedDates, ...clearedUpdatedDates]),
@@ -121,11 +122,34 @@ export const { POST } = serve(async (context) => {
         revalidateSchedulePages(date);
       }
     }
+
+    return allUpdatedDates;
   });
+
+  if (allUpdatedDates.length > 0) {
+    await context.run("send-change-notification", async () => {
+      const changesList = allUpdatedDates
+        .map((dateStr) =>
+          DateTime.fromISO(dateStr).toFormat("EEEE, MMMM dd, yyyy"),
+        )
+        .join("\n");
+
+      await resend.emails.send({
+        from: "PHS Schedule <no-reply@feedback.phs-schedule.com>",
+        to: env.NOTIFICATION_EMAIL,
+        subject: `Schedule Changes Imported - ${allUpdatedDates.length} day(s) updated`,
+        text: `Calendar import completed with changes to the following days:
+
+${changesList}`,
+      });
+    });
+  }
+
   return {
     message: `Calendar imported successfully (${allEvents.length} events processed, ${llmEvents.length} needed LLM processing)`,
     imported: true,
     totalEvents: allEvents.length,
     llmEvents: llmEvents.length,
+    changedDates: allUpdatedDates.length,
   };
 });
