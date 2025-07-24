@@ -47,8 +47,8 @@ export type DailySchedule = {
   message?: string;
 };
 
-export const SCHOOL_YEAR_START = DateTime.fromISO("2024-08-12");
-export const SCHOOL_YEAR_END = DateTime.fromISO("2025-06-05");
+export const SCHOOL_YEAR_START = DateTime.fromISO("2025-08-11");
+export const SCHOOL_YEAR_END = DateTime.fromISO("2026-06-12");
 
 /// Returns a `DailySchedule` where each interval has the same time of day but uses the given date
 export function transformScheduleToDate(
