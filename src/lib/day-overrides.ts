@@ -133,27 +133,6 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
 
-  // "2025-09-26": {
-  //   message: "Consent Assembly",
-  //   periods: [
-  //     instructionalPeriod(2, "08:30:00", "10:00:00"),
-  //     brunchPeriod("10:00:00", "10:15:00"),
-  //     instructionalPeriod(4, "10:15:00", "11:45:00"),
-  //     passingPeriod("11:45:00"),
-  //     {
-  //       id: "academy",
-  //       type: "instructional",
-  //       name: "Academy",
-  //       interval: Interval.fromDateTimes(
-  //         DateTime.fromISO("11:55:00"),
-  //         DateTime.fromISO("12:40:00"),
-  //       ),
-  //     },
-  //     lunchPeriod("12:40:00", "13:20:00"),
-  //     instructionalPeriod(6, "13:20:00", "14:50:00"),
-  //   ],
-  // },
-
   "2025-09-24": {
     message: "Shelter in place",
     periods: evenPeriods,
@@ -242,19 +221,6 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ...emptyDay,
   },
 
-  // "2025-11-14": {
-  //   message: "Inverted Academy",
-  //   periods: [
-  //     instructionalPeriod(2, "08:30:00", "10:00:00"),
-  //     brunchPeriod("10:00:00", "10:15:00"),
-  //     instructionalPeriod(4, "10:15:00", "11:45:00"),
-  //     passingPeriod("11:45:00"),
-  //     academyPeriod("11:55:00", "12:40:00"),
-  //     lunchPeriod("12:40:00", "13:20:00"),
-  //     instructionalPeriod(6, "13:20:00", "14:50:00"),
-  //   ],
-  // },
-
   ...vacation("2025-11-24", "2025-11-28", "Thanksgiving Break"),
 
   "2025-12-15": {
@@ -339,28 +305,6 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(7, "14:55:00", "15:25:00"),
     ],
   },
-
-  // "2026-01-14": {
-  //   message: "Fire drill",
-  //   periods: [
-  //     instructionalPeriod(2, "08:30:00", "09:50:00"),
-  //     brunchPeriod("09:50:00", "10:05:00"),
-  //     academyPeriod("10:05:00", "10:40:00"),
-  //     passingPeriod("10:40:00"),
-  //     instructionalPeriod(4, "10:50:00", "12:20:00"),
-  //     {
-  //       id: "drill",
-  //       type: "instructional",
-  //       name: "Fire drill",
-  //       interval: Interval.fromDateTimes(
-  //         DateTime.fromISO("12:20:00"),
-  //         DateTime.fromISO("12:50:00"),
-  //       ),
-  //     },
-  //     lunchPeriod("12:50:00", "13:30:00"),
-  //     instructionalPeriod(6, "13:30:00", "14:50:00"),
-  //   ],
-  // },
 
   "2026-01-19": {
     message: "Martin Luther King Jr. Day",
