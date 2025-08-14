@@ -49,8 +49,8 @@ export type DailySchedule = {
   message?: string;
 };
 
-export const SCHOOL_YEAR_START = DateTime.fromISO("2024-08-12");
-export const SCHOOL_YEAR_END = DateTime.fromISO("2025-06-05");
+export const SCHOOL_YEAR_START = DateTime.fromISO("2025-08-11");
+export const SCHOOL_YEAR_END = DateTime.fromISO("2026-06-04");
 
 export function getScheduleForDay(day: DateTime): DailySchedule {
   // No school if it's before the start of the school year
