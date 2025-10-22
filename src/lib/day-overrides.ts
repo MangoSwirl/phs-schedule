@@ -137,6 +137,26 @@ export const dayOverrides: Record<string, DailySchedule> = {
     periods: evenPeriods,
   },
 
+  "2025-10-29": {
+    message: "Inverted Academy",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:15:00"),
+      instructionalPeriod(4, "10:15:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      {
+        id: "academy",
+        type: "instructional",
+        name: "Academy/Consent Assembly",
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:40:00"),
+        ),
+      },
+      lunchPeriod("12:40:00", "13:20:00"),
+      instructionalPeriod(6, "13:20:00", "14:50:00"),
+    ],
+  },
   "2025-10-13": {
     message: "Indigenous Peoples' Day",
     ...emptyDay,
