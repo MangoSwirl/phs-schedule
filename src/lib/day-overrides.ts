@@ -137,7 +137,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     periods: evenPeriods,
   },
 
-  "2024-10-29": {
+  "2025-10-29": {
     message: "Inverted Academy",
     periods: [
       instructionalPeriod(2, "08:30:00", "10:00:00"),
