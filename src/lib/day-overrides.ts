@@ -233,7 +233,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
 
   "2025-11-10": {
     message: "Tuesday schedule",
-    periods: evenPeriods,
+    periods: oddPeriods,
   },
   "2025-11-11": {
     message: "Veterans Day",
