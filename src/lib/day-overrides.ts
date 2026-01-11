@@ -401,19 +401,6 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(7, "14:45:00", "15:25:00"),
     ],
   },
-  "2026-03-06": {
-    message: "Career Day",
-    periods: [
-      instructionalPeriod(1, "08:30:00", "09:55:00"),
-      brunchPeriod("09:55:00", "10:10:00"),
-      academyPeriod("10:10:00", "11:10:00"),
-      passingPeriod("11:10:00"),
-      instructionalPeriod(4, "11:20:00", "12:45:00"),
-      lunchPeriod("12:45:00", "13:25:00"),
-      instructionalPeriod(6, "13:25:00", "14:50:00"),
-    ],
-  },
-
   "2026-03-09": {
     message: "Friday schedule",
     periods: evenPeriods,
@@ -483,6 +470,18 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(4, "11:40:00", "12:55:00"),
       lunchPeriod("12:55:00", "13:35:00"),
       instructionalPeriod(6, "13:35:00", "14:50:00"),
+    ],
+  },
+  "2026-03-27": {
+    message: "Career Day",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "09:55:00"),
+      brunchPeriod("09:55:00", "10:10:00"),
+      academyPeriod("10:10:00", "11:10:00"),
+      passingPeriod("11:10:00"),
+      instructionalPeriod(4, "11:20:00", "12:45:00"),
+      lunchPeriod("12:45:00", "13:25:00"),
+      instructionalPeriod(6, "13:25:00", "14:50:00"),
     ],
   },
 
