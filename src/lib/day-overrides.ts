@@ -455,21 +455,21 @@ export const dayOverrides: Record<string, DailySchedule> = {
   "2026-03-25": {
     message: "CAASPP Testing",
     periods: [
-      instructionalPeriod(2, "08:30:00", "09:45:00"),
-      brunchPeriod("09:45:00", "10:00:00"),
+      instructionalPeriod(2, "08:30:00", "09:40:00"),
+      brunchPeriod("09:40:00", "09:55:00"),
       {
         id: "academy",
         type: "instructional",
         name: "Testing/Academy",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("10:00:00"),
-          DateTime.fromISO("11:30:00"),
+          DateTime.fromISO("09:55:00"),
+          DateTime.fromISO("11:40:00"),
         ),
       },
-      passingPeriod("11:30:00"),
-      instructionalPeriod(4, "11:40:00", "12:55:00"),
-      lunchPeriod("12:55:00", "13:35:00"),
-      instructionalPeriod(6, "13:35:00", "14:50:00"),
+      passingPeriod("11:40:00"),
+      instructionalPeriod(4, "11:50:00", "13:00:00"),
+      lunchPeriod("13:00:00", "13:40:00"),
+      instructionalPeriod(6, "13:40:00", "14:50:00"),
     ],
   },
   "2026-03-27": {
@@ -531,7 +531,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
   ...vacation("2026-04-06", "2026-04-10", "Spring Break"),
 
   "2026-04-13": {
-    message: "Secondary location fire drill",
+    message: "Reverse Lockdown Drill",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:10:00"),
       passingPeriod("09:10:00"),
@@ -542,23 +542,15 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(4, "11:05:00", "11:45:00"),
       passingPeriod("11:45:00"),
       {
-        id: "drill-review",
-        type: "instructional",
-        name: "Drill Review",
-        interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:05:00"),
-        ),
-      },
-      {
         id: "drill",
         type: "instructional",
-        name: "Drill",
+        name: "Reverse Lockdown",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("12:05:00"),
-          DateTime.fromISO("12:35:00"),
+          DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:25:00"),
         ),
       },
+      passingPeriod("12:25:00"),
       instructionalPeriod(5, "12:35:00", "13:15:00"),
       lunchPeriod("13:15:00", "13:55:00"),
       instructionalPeriod(6, "13:55:00", "14:35:00"),
