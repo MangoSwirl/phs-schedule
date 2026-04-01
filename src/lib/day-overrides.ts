@@ -510,21 +510,21 @@ export const dayOverrides: Record<string, DailySchedule> = {
   "2026-04-01": {
     message: "CAASPP Testing",
     periods: [
-      instructionalPeriod(2, "08:30:00", "09:45:00"),
-      brunchPeriod("09:45:00", "10:00:00"),
+      instructionalPeriod(2, "08:30:00", "09:40:00"),
+      brunchPeriod("09:40:00", "09:55:00"),
       {
         id: "academy",
         type: "instructional",
         name: "Testing/Academy",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("10:00:00"),
-          DateTime.fromISO("11:30:00"),
+          DateTime.fromISO("09:55:00"),
+          DateTime.fromISO("11:40:00"),
         ),
       },
-      passingPeriod("11:30:00"),
-      instructionalPeriod(4, "11:40:00", "12:55:00"),
-      lunchPeriod("12:55:00", "13:35:00"),
-      instructionalPeriod(6, "13:35:00", "14:50:00"),
+      passingPeriod("11:40:00"),
+      instructionalPeriod(4, "11:50:00", "13:00:00"),
+      lunchPeriod("13:00:00", "13:40:00"),
+      instructionalPeriod(6, "13:40:00", "14:50:00"),
     ],
   },
 
