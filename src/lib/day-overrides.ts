@@ -531,32 +531,8 @@ export const dayOverrides: Record<string, DailySchedule> = {
   ...vacation("2026-04-06", "2026-04-10", "Spring Break"),
 
   "2026-04-13": {
-    message: "Reverse Lockdown Drill",
-    periods: [
-      instructionalPeriod(1, "08:30:00", "09:10:00"),
-      passingPeriod("09:10:00"),
-      instructionalPeriod(2, "09:20:00", "10:00:00"),
-      brunchPeriod("10:00:00", "10:15:00"),
-      instructionalPeriod(3, "10:15:00", "10:55:00"),
-      passingPeriod("10:55:00"),
-      instructionalPeriod(4, "11:05:00", "11:45:00"),
-      passingPeriod("11:45:00"),
-      {
-        id: "drill",
-        type: "instructional",
-        name: "Reverse Lockdown",
-        interval: Interval.fromDateTimes(
-          DateTime.fromISO("11:55:00"),
-          DateTime.fromISO("12:25:00"),
-        ),
-      },
-      passingPeriod("12:25:00"),
-      instructionalPeriod(5, "12:35:00", "13:15:00"),
-      lunchPeriod("13:15:00", "13:55:00"),
-      instructionalPeriod(6, "13:55:00", "14:35:00"),
-      passingPeriod("14:35:00"),
-      instructionalPeriod(7, "14:45:00", "15:25:00"),
-    ],
+    message: "Monday schedule",
+    periods: mondayPeriods,
   },
 
   "2026-04-20": {
