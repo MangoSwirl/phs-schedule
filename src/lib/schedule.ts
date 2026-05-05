@@ -48,7 +48,38 @@ export type DailySchedule = {
 };
 
 export const SCHOOL_YEAR_START = DateTime.fromISO("2025-08-11");
-export const SCHOOL_YEAR_END = DateTime.fromISO("2026-06-12");
+export const SCHOOL_YEAR_END = DateTime.fromISO("2026-06-04");
+
+export function getScheduleForDay(day: DateTime): DailySchedule {
+  // No school if it's before the start of the school year
+  if (day < SCHOOL_YEAR_START) {
+    return transformScheduleToDate(emptyDay, day);
+  }
+
+  // No school if it's after the end of the school year
+  if (day > SCHOOL_YEAR_END) {
+    return transformScheduleToDate(emptyDay, day);
+  }
+
+  // If the day is in the dayOverrides, use that
+  if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
+    if (day.weekday === 2) {
+      console.log(dayOverrides[day.toFormat("yyyy-LL-dd")]);
+    }
+
+    return transformScheduleToDate(
+      dayOverrides[day.toFormat("yyyy-LL-dd")],
+      day,
+    );
+  }
+
+  return transformScheduleToDate(
+    day.weekday in defaultSchedule
+      ? defaultSchedule[day.weekday as WeekdayNumbers]
+      : emptyDay,
+    day,
+  );
+}
 
 /// Returns a `DailySchedule` where each interval has the same time of day but uses the given date
 export function transformScheduleToDate(
