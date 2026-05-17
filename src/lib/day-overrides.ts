@@ -564,6 +564,26 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
 
+  "2026-05-18": {
+    message: "Open House",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:00:00"),
+      passingPeriod("09:00:00"),
+      instructionalPeriod(2, "09:10:00", "09:40:00"),
+      passingPeriod("09:40:00"),
+      instructionalPeriod(3, "09:50:00", "10:20:00"),
+      brunchPeriod("10:20:00", "10:35:00"),
+      instructionalPeriod(4, "10:35:00", "11:05:00"),
+      passingPeriod("11:05:00"),
+      instructionalPeriod(5, "11:15:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      instructionalPeriod(6, "11:55:00", "12:25:00"),
+      passingPeriod("12:25:00"),
+      instructionalPeriod(7, "12:35:00", "13:05:00"),
+      lunchPeriod("13:05:00", "13:35:00"),
+    ],
+  },
+
   "2026-05-22": {
     message: "Day on the Green",
     periods: [
@@ -572,13 +592,12 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(4, "10:15:00", "11:45:00"),
       passingPeriod("11:45:00"),
       instructionalPeriod(6, "11:55:00", "13:25:00"),
-      passingPeriod("13:25:00", "13:30:00"),
       {
         id: "day-on-the-green",
         type: "instructional",
         name: "Day on the Green",
         interval: Interval.fromDateTimes(
-          DateTime.fromISO("13:30:00"),
+          DateTime.fromISO("13:25:00"),
           DateTime.fromISO("15:00:00"),
         ),
       },
