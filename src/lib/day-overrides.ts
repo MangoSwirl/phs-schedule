@@ -18,7 +18,7 @@ import {
 
 export const dayOverrides: Record<string, DailySchedule> = {
   "2026-08-20": {
-    message: "Thursday Assessment Calendar",
+    message: "Assessment Schedule",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:50:00"),
       brunchPeriod("09:50:00", "09:55:00"),
@@ -40,7 +40,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
   "2026-08-21": {
-    message: "Friday Assessment Adjusted Schedule",
+    message: "Assessment Adjusted Schedule",
     periods: [
       instructionalPeriod(2, "08:30:00", "09:50:00"),
       brunchPeriod("09:50:00", "09:55:00"),
@@ -54,7 +54,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
   "2026-08-24": {
-    message: "Evacuation Bell Schedule",
+    message: "Evacuation Schedule",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:10:00"),
       passingPeriod("09:10:00"),
@@ -121,7 +121,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     message: "Labor Day",
   },
   "2026-09-18": {
-    message: "Rally Bell Schedule",
+    message: "Rally Schedule",
     periods: [
       instructionalPeriod(2, "08:30:00", "10:00:00"),
       brunchPeriod("10:00:00", "10:05:00"),
