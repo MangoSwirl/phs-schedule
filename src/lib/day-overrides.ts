@@ -18,7 +18,7 @@ import {
 
 export const dayOverrides: Record<string, DailySchedule> = {
   "2026-08-20": {
-    message: "Assessment Calendar",
+    message: "Thursday Assessment Calendar",
     periods: [
       instructionalPeriod(1, "08:30:00", "09:50:00"),
       brunchPeriod("09:50:00", "09:55:00"),
@@ -26,10 +26,21 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(3, "10:05:00", "11:25:00"),
       passingPeriod("11:25:00"),
       instructionalPeriod(5, "11:35:00", "12:55:00"),
+      lunchPeriod("12:55:00", "13:25:00"),
+      passingPeriod("13:25:00"),
+      {
+        id: `star-test`,
+        type: "instructional",
+        name: `STAR Test`,
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("13:35:00"),
+          DateTime.fromISO("15:35:00"),
+        ),
+      },
     ],
   },
   "2026-08-21": {
-    message: "Assessment Adjusted Schedule",
+    message: "Friday Assessment Adjusted Schedule",
     periods: [
       instructionalPeriod(2, "08:30:00", "09:50:00"),
       brunchPeriod("09:50:00", "09:55:00"),
@@ -42,9 +53,93 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(7, "13:35:00", "14:55:00"),
     ],
   },
-
+  "2026-08-24": {
+    message: "Evacuation Bell Schedule",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:10:00"),
+      passingPeriod("09:10:00"),
+      instructionalPeriod(2, "09:20:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:05:00"),
+      passingPeriod("10:05:00"),
+      instructionalPeriod(3, "10:15:00", "10:55:00"),
+      passingPeriod("10:55:00"),
+      instructionalPeriod(4, "11:05:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      instructionalPeriod(5, "11:55:00", "12:35:00"),
+      lunchPeriod("12:35:00", "13:05:00"),
+      passingPeriod("13:05:00"),
+      instructionalPeriod(6, "13:15:00", "13:55:00"),
+      {
+        id: `drill-review`,
+        type: "instructional",
+        name: `Drill Review in 6th`,
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("13:55:00"),
+          DateTime.fromISO("14:05:00"),
+        ),
+      },
+      {
+        id: `evacuation-drill`,
+        type: "instructional",
+        name: `Evacuation Drill`,
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("14:05:00"),
+          DateTime.fromISO("14:35:00"),
+        ),
+      },
+      passingPeriod("14:35:00"),
+      instructionalPeriod(7, "14:25:00", "15:25:00"),
+    ],
+  },
+  "2026-09-03": {
+    message: "BTSN Schedule #1",
+    periods: [
+      instructionalPeriod(1, "08:30:00", "09:50:00"),
+      brunchPeriod("09:50:00", "09:55:00"),
+      passingPeriod("09:10:00"),
+      instructionalPeriod(3, "10:05:00", "11:25:00"),
+      passingPeriod("11:25:00"),
+      instructionalPeriod(5, "11:35:00", "12:55:00"),
+    ],
+  },
+  "2026-09-04": {
+    message: "BTSN Schedule #2",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "09:50:00"),
+      brunchPeriod("09:50:00", "09:55:00"),
+      passingPeriod("09:55:00"),
+      instructionalPeriod(4, "10:05:00", "11:25:00"),
+      passingPeriod("11:25:00"),
+      instructionalPeriod(6, "11:35:00", "12:55:00"),
+      lunchPeriod("12:55:00", "13:25:00"),
+      passingPeriod("13:25:00"),
+      instructionalPeriod(7, "13:35:00", "14:55:00"),
+    ],
+  },
   "2026-09-07": {
     ...emptyDay,
     message: "Labor Day",
+  },
+  "2026-09-18": {
+    message: "Rally Bell Schedule",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:05:00"),
+      passingPeriod("10:05:00"),
+      instructionalPeriod(4, "10:15:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      {
+        id: `hoco-rally`,
+        type: "instructional",
+        name: `Rally`,
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:40:00"),
+        ),
+      },
+      lunchPeriod("12:40:00", "13:10:00"),
+      passingPeriod("13:10:00"),
+      instructionalPeriod(6, "13:20:00", "14:50:00"),
+    ],
   },
 };
