@@ -171,7 +171,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
   "2026-10-15": {
     message: "Great Shakeout Schedule #1",
     periods: [
-      instructionalPeriod(1, "08:30:00", "10:-0:00"),
+      instructionalPeriod(1, "08:30:00", "10:00:00"),
       brunchPeriod("10:00:00", "10:05:00"),
       passingPeriod("10:05:00"),
       {
