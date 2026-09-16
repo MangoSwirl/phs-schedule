@@ -243,6 +243,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     ],
   },
   "2026-11-9": {
+    message: "Wednesday/Friday Schedule",
     periods: evenPeriods,
   },
   "2026-11-11": {
