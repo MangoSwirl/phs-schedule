@@ -124,8 +124,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
     message: "Rally Schedule",
     periods: [
       instructionalPeriod(2, "08:30:00", "10:00:00"),
-      brunchPeriod("10:00:00", "10:05:00"),
-      passingPeriod("10:05:00"),
+      brunchPeriod("10:00:00", "10:15:00"),
       instructionalPeriod(4, "10:15:00", "11:45:00"),
       passingPeriod("11:45:00"),
       {
@@ -137,8 +136,7 @@ export const dayOverrides: Record<string, DailySchedule> = {
           DateTime.fromISO("12:40:00"),
         ),
       },
-      lunchPeriod("12:40:00", "13:10:00"),
-      passingPeriod("13:10:00"),
+      lunchPeriod("12:40:00", "13:20:00"),
       instructionalPeriod(6, "13:20:00", "14:50:00"),
     ],
   },
