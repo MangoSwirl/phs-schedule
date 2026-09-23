@@ -164,6 +164,28 @@ export const dayOverrides: Record<string, DailySchedule> = {
       instructionalPeriod(6, "13:20:00", "14:50:00"),
     ],
   },
+  "2026-09-30": {
+    message: "Assembly",
+    periods: [
+      instructionalPeriod(2, "08:30:00", "10:00:00"),
+      brunchPeriod("10:00:00", "10:05:00"),
+      passingPeriod("10:05:00"),
+      instructionalPeriod(4, "10:15:00", "11:45:00"),
+      passingPeriod("11:45:00"),
+      {
+        id: `consent-assembly`,
+        type: "instructional",
+        name: `Consent Assembly / Homeroom`,
+        interval: Interval.fromDateTimes(
+          DateTime.fromISO("11:55:00"),
+          DateTime.fromISO("12:40:00"),
+        ),
+      },
+      lunchPeriod("12:40:00", "13:10:00"),
+      passingPeriod("13:10:00"),
+      instructionalPeriod(6, "13:20:00", "14:50:00"),
+    ],
+  },
   "2026-10-12": {
     ...emptyDay,
     message: "Columbus Day/Indigenous Peoples Day",
