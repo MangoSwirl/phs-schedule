@@ -8,7 +8,12 @@ import {
   lunchPeriod,
   passingPeriod,
 } from "./schedule-helpers";
-import { SCHOOL_YEAR_START, SCHOOL_YEAR_END, DailySchedule } from "./schedule";
+import {
+  SCHOOL_YEAR_START,
+  SCHOOL_YEAR_END,
+  DailySchedule,
+  Period,
+} from "./schedule";
 
 type IcsRow = {
   summary: string;
@@ -96,75 +101,127 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
     if (event.startDate === event.endDate) continue;
     if (event.summary !== dayToSummary[event.startDate.getDate()]) {
       const message = event.summary.startsWith("SPECIAL")
-        ? event.summary.slice(9)[2]
+        ? event.summary.slice(9)
         : event.summary;
       const matches = Array.from(
         event.description.matchAll(
           /<tr>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/g,
         ),
       );
-      const schedule = matches.map((match) => {
-        // Helper to strip HTML tags and non-breaking spaces
-        const cleanText = (text: string) =>
-          text
-            .replace(/<[^>]*>/g, "") // Removes tags like <b>, </b>, etc.
-            .replace(/&nbsp;|\u00A0/g, " ") // Replaces non-breaking spaces with normal spaces
-            .trim();
+      // Helper to strip HTML tags and non-breaking spaces
+      const cleanText = (text: string) =>
+        text
+          .replace(/<[^>]*>/g, "") // Removes tags like <b>, </b>, etc.
+          .replace(/&nbsp;|\u00A0/g, " ") // Replaces non-breaking spaces with normal spaces
+          .trim();
 
-        // Helper to convert time strings to "HH:mm:ss" (24h format)
-        const to24Hour = (timeStr: string) => {
-          if (!timeStr) return "";
+      const schedule = matches.map((match) => ({
+        name: cleanText(match[1]),
+        startTime: cleanText(match[2]),
+        endTime: cleanText(match[3]),
+      }));
 
-          const s = timeStr.replace(/^-+\s*/, "").trim();
+      // Parse a clock cell like "8:30", "8:30:00", "8:30 AM" or "8:30AM"
+      const parseClock = (
+        timeStr: string,
+      ): { time: DateTime; hasMeridiem: boolean } | null => {
+        const s = timeStr.replace(/^-+\s*/, "").trim();
+        if (!s) return null;
 
-          // Try parsing as 12-hour format with AM/PM (e.g., "8:30 AM")
-          let dt = DateTime.fromFormat(s, "h:mm a");
+        const withMeridiem = s.match(
+          /^(\d{1,2}):(\d{2})(?::\d{2})?\s*(a\.?m\.?|p\.?m\.?)$/i,
+        );
+        if (withMeridiem) {
+          const dt = DateTime.fromFormat(
+            `${Number(withMeridiem[1])}:${withMeridiem[2]} ${withMeridiem[3][0].toUpperCase()}M`,
+            "h:mm a",
+          );
+          if (dt.isValid) return { time: dt, hasMeridiem: true };
+        }
 
-          // If that fails, try parsing as 24-hour format (e.g., "8:30" or "08:30")
-          if (!dt.isValid) {
-            dt = DateTime.fromFormat(s, "H:mm");
-          }
+        for (const format of ["H:mm", "H:mm:ss"]) {
+          const dt = DateTime.fromFormat(s, format);
+          if (dt.isValid) return { time: dt, hasMeridiem: false };
+        }
+        return null;
+      };
 
-          // Return in "HH:mm:ss" format if valid, otherwise return original cleaned string
-          return dt.isValid ? dt.toFormat("HH:mm:ss") : s;
-        };
+      // The source tables usually omit AM/PM, so resolve bare times against
+      // the previous time in the table ("1:25" after "11:55" is 1:25 PM).
+      let lastMinuteOfDay = -1;
+      const resolveTime = (timeStr: string): DateTime | null => {
+        const parsed = parseClock(timeStr);
+        if (!parsed) return null;
+        const { time, hasMeridiem } = parsed;
+        const minutes = time.hour * 60 + time.minute;
+        if (!hasMeridiem && minutes < lastMinuteOfDay && time.hour < 12) {
+          const pm = time.plus({ hours: 12 });
+          lastMinuteOfDay = Math.max(lastMinuteOfDay, pm.hour * 60 + pm.minute);
+          return pm;
+        }
+        lastMinuteOfDay = Math.max(lastMinuteOfDay, minutes);
+        return time;
+      };
 
-        return {
-          name: cleanText(match[1]),
-          startTime: to24Hour(cleanText(match[2])),
-          endTime: to24Hour(cleanText(match[3])),
-        };
-      });
-      const periods = [];
+      const periods: Period[] = [];
 
       for (const period of schedule) {
+        if (!period.name) continue;
+        const start = resolveTime(period.startTime);
+        const end = resolveTime(period.endTime);
+        // Skip header/note rows and anything we couldn't parse into a real span
+        if (!start || !end || end.toMillis() <= start.toMillis()) continue;
+
+        const startTime = start.toFormat("HH:mm:ss");
+        const endTime = end.toFormat("HH:mm:ss");
+
         if (period.name.startsWith("Period ")) {
           periods.push(
             instructionalPeriod(
               Number(period.name.slice(-1)),
-              period.startTime,
-              period.endTime,
+              startTime,
+              endTime,
             ),
           );
         } else if (period.name.startsWith("Academy")) {
-          periods.push(academyPeriod(period.startTime, period.endTime));
+          periods.push(academyPeriod(startTime, endTime));
         } else if (period.name.startsWith("Lunch")) {
-          periods.push(lunchPeriod(period.startTime, period.endTime));
+          periods.push(lunchPeriod(startTime, endTime));
         } else if (period.name.startsWith("Brunch")) {
-          periods.push(brunchPeriod(period.startTime, period.endTime));
+          periods.push(brunchPeriod(startTime, endTime));
         } else if (period.name.startsWith("Passing")) {
-          periods.push(passingPeriod(period.startTime, period.endTime));
+          periods.push(passingPeriod(startTime, endTime));
         } else {
           periods.push({
             id: period.name,
             type: "instructional" as const,
             name: period.name,
-            interval: Interval.fromDateTimes(
-              DateTime.fromISO(period.startTime),
-              DateTime.fromISO(period.endTime),
-            ),
+            interval: Interval.fromDateTimes(start, end),
           });
         }
+      }
+
+      // Insert invisible spacers for any gap the source table has no Passing
+      // row for, so blocks aren't rendered flush against each other.
+      const periodsWithSpacing: Period[] = [];
+      for (const period of periods) {
+        const previous = periodsWithSpacing[periodsWithSpacing.length - 1];
+        if (
+          previous &&
+          previous.type !== "passing" &&
+          period.type !== "passing" &&
+          previous.interval.end &&
+          period.interval.start &&
+          period.interval.start > previous.interval.end
+        ) {
+          periodsWithSpacing.push(
+            passingPeriod(
+              previous.interval.end.toFormat("HH:mm:ss"),
+              period.interval.start.toFormat("HH:mm:ss"),
+            ),
+          );
+        }
+        periodsWithSpacing.push(period);
       }
 
       const year = event.startDate.getFullYear();
@@ -172,7 +229,7 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
       const day = String(event.startDate.getDate()).padStart(2, "0");
 
       const formatted = `${year}-${month}-${day}`;
-      dayOverrides[formatted] = { message, periods };
+      dayOverrides[formatted] = { message, periods: periodsWithSpacing };
     }
   }
   return dayOverrides;
