@@ -2,6 +2,10 @@ import { Interval, DateTime, WeekdayNumbers, Settings } from "luxon";
 import { emptyDay, defaultSchedule } from "./schedule-templates";
 import { generateDayOverrides } from "./ics-import";
 
+let cachedOverrides: Record<string, DailySchedule> | null = null;
+let overridesCacheTime: number = 0;
+const OVERRIDES_CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
+
 Settings.defaultZone = "America/Los_Angeles";
 
 export type VisiblePeriod = {
@@ -62,7 +66,12 @@ export async function getScheduleForDay(day: DateTime): Promise<DailySchedule> {
     return transformScheduleToDate(emptyDay, day);
   }
 
-  const dayOverrides = (await generateDayOverrides()) ?? {};
+  const now = Date.now();
+  if (!cachedOverrides || now - overridesCacheTime > OVERRIDES_CACHE_TTL_MS) {
+    cachedOverrides = (await generateDayOverrides()) ?? {};
+    overridesCacheTime = now;
+  }
+  const dayOverrides = cachedOverrides;
 
   // If the day is in the dayOverrides, use that
   if (day.toFormat("yyyy-LL-dd") in dayOverrides) {

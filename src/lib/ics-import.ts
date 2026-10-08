@@ -1,4 +1,5 @@
 import ICAL from "ical.js";
+import crypto from "crypto";
 import { DateTime, Interval } from "luxon";
 import {
   academyPeriod,
@@ -18,16 +19,39 @@ type IcsRow = {
   uid: string;
 };
 
+let cachedIcs: IcsRow[] | null = null;
+let cacheTime: number = 0;
+const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+let cachedIcsTextHash: string | null = null;
+let cachedParsedResult: IcsRow[] | null = null;
+
 async function fetchAndParseIcs(): Promise<IcsRow[]> {
+  const now = Date.now();
+  if (cachedParsedResult && now - cacheTime < CACHE_TTL_MS) {
+    return cachedParsedResult;
+  }
   try {
     const response = await fetch(
       "https://calendar.google.com/calendar/ical/c_30d5a2c1a8f1c82ef97ae6a5339f97aee29fcd9c09fcd30a6c738022fff30753%40group.calendar.google.com/public/basic.ics",
+      { cache: "no-cache" },
     );
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const icsText = await response.text();
+    const textHash = crypto.createHash("sha256").update(icsText).digest("hex");
+
+    if (
+      cachedIcsTextHash &&
+      cachedIcsTextHash === textHash &&
+      cachedParsedResult
+    ) {
+      cacheTime = now;
+      return cachedParsedResult;
+    }
+
     const jCalData = ICAL.parse(icsText);
     const comp = new ICAL.Component(jCalData);
     const vevents = comp.getAllSubcomponents("vevent");
@@ -53,9 +77,15 @@ async function fetchAndParseIcs(): Promise<IcsRow[]> {
         ev.startDate.getTime() >= SCHOOL_YEAR_START.toJSDate().getTime() &&
         ev.startDate.getTime() <= SCHOOL_YEAR_END.toJSDate().getTime(),
     );
+    cachedParsedResult = events;
+    cachedIcsTextHash = textHash;
+    cacheTime = now;
     return events;
   } catch (error) {
     console.error("Failed to fetch or parse ICS:", error);
+    if (cachedParsedResult) {
+      return cachedParsedResult;
+    }
     throw error;
   }
 }
