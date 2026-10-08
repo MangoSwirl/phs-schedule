@@ -100,10 +100,14 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
   const dayOverrides: Record<string, DailySchedule> = {};
   for (const event of ics) {
     if (event.startDate === event.endDate) continue;
-    if (event.summary !== dayToSummary[event.startDate.getDate()]) {
-      const message = event.summary.startsWith("SPECIAL")
-        ? event.summary.slice(9)
-        : event.summary;
+    // Skip the recurring routine bell-schedule events; only overrides count.
+    const routineSummary = dayToSummary[event.startDate.getDay()]?.trim();
+    if (event.summary.trim() !== routineSummary) {
+      const message = (
+        event.summary.startsWith("SPECIAL")
+          ? event.summary.slice(10)
+          : event.summary
+      ).trim();
       const matches = Array.from(
         event.description.matchAll(
           /<tr>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/g,
@@ -116,11 +120,46 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           .replace(/&nbsp;|\u00A0/g, " ") // Replaces non-breaking spaces with normal spaces
           .trim();
 
-      const schedule = matches.map((match) => ({
-        name: cleanText(match[1]),
-        startTime: cleanText(match[2]),
-        endTime: cleanText(match[3]),
-      }));
+      let schedule: {
+        name: string;
+        startTime: string;
+        endTime: string;
+      }[];
+
+      if (matches.length > 0) {
+        schedule = matches.map((match) => ({
+          name: cleanText(match[1]),
+          startTime: cleanText(match[2]),
+          endTime: cleanText(match[3]),
+        }));
+      } else {
+        // Some events use plain text rows ("Period 2 - 8:30 AM - 10:00 AM"
+        // or "Period 1    8:30 AM    9:50 AM") separated by newlines or <br>
+        // tags instead of an HTML table.
+        const timePattern = String.raw`\d{1,2}:\d{2}(?::\d{2})?\s*(?:[ap]\.?m\.?)?\.?`;
+        const rowPattern = new RegExp(
+          String.raw`^(.+?)\s*(?:-\s*|\s{2,})\s*(${timePattern})\s*(?:-\s*|\s{2,})\s*(${timePattern})`,
+          "i",
+        );
+        const text = event.description
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<\/(p|div)>/gi, "\n")
+          .replace(/<[^>]*>/g, "")
+          .replace(/&nbsp;|\u00A0/g, " ");
+        schedule = text
+          .split(/\n+/)
+          .map((line) => {
+            const m = line.trim().match(rowPattern);
+            return m
+              ? {
+                  name: m[1].trim(),
+                  startTime: m[2].trim(),
+                  endTime: m[3].trim(),
+                }
+              : null;
+          })
+          .filter((row): row is NonNullable<typeof row> => row !== null);
+      }
 
       // Parse a clock cell like "8:30", "8:30:00", "8:30 AM" or "8:30AM"
       const parseClock = (
@@ -234,6 +273,13 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
         message: messageOverrides[formatted] ?? message,
         periods: periodsWithSpacing,
       };
+    }
+  }
+  // No-school dates (holidays etc.) are EXDATEd from the calendar, so they
+  // never appear as ICS events — add them from the static list.
+  for (const [date, message] of Object.entries(messageOverrides)) {
+    if (!(date in dayOverrides)) {
+      dayOverrides[date] = { message, periods: [] };
     }
   }
   return dayOverrides;
