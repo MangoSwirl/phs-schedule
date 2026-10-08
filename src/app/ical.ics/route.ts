@@ -15,7 +15,7 @@ export async function GET() {
 
   for (let i = 0; i < totalDays; i++) {
     const day = SCHOOL_YEAR_START.plus({ days: i });
-    daysForYear.push(getScheduleForDay(day));
+    daysForYear.push(await getScheduleForDay(day));
   }
 
   const allPeriods = daysForYear.map((schedule) => schedule.periods).flat();

@@ -1,6 +1,10 @@
 import { Interval, DateTime, WeekdayNumbers, Settings } from "luxon";
-import { dayOverrides } from "./day-overrides";
 import { emptyDay, defaultSchedule } from "./schedule-templates";
+import { generateDayOverrides } from "./ics-import";
+
+let cachedOverrides: Record<string, DailySchedule> | null = null;
+let overridesCacheTime: number = 0;
+const OVERRIDES_CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
 
 Settings.defaultZone = "America/Los_Angeles";
 
@@ -52,7 +56,7 @@ export type DailySchedule = {
 export const SCHOOL_YEAR_START = DateTime.fromISO("2026-08-10");
 export const SCHOOL_YEAR_END = DateTime.fromISO("2027-06-04");
 
-export function getScheduleForDay(day: DateTime): DailySchedule {
+export async function getScheduleForDay(day: DateTime): Promise<DailySchedule> {
   // No school if it's before the start of the school year
   if (day < SCHOOL_YEAR_START) {
     return transformScheduleToDate(emptyDay, day);
@@ -63,12 +67,15 @@ export function getScheduleForDay(day: DateTime): DailySchedule {
     return transformScheduleToDate(emptyDay, day);
   }
 
+  const now = Date.now();
+  if (!cachedOverrides || now - overridesCacheTime > OVERRIDES_CACHE_TTL_MS) {
+    cachedOverrides = (await generateDayOverrides()) ?? {};
+    overridesCacheTime = now;
+  }
+  const dayOverrides = cachedOverrides;
+
   // If the day is in the dayOverrides, use that
   if (day.toFormat("yyyy-LL-dd") in dayOverrides) {
-    if (day.weekday === 2) {
-      console.log(dayOverrides[day.toFormat("yyyy-LL-dd")]);
-    }
-
     return transformScheduleToDate(
       dayOverrides[day.toFormat("yyyy-LL-dd")],
       day,
@@ -110,16 +117,16 @@ export function transformScheduleToDate(
   };
 }
 
-export function getScheduleForWeek(
+export async function getScheduleForWeek(
   week: DateTime,
-): (DailySchedule & { date: DateTime })[] {
+): Promise<(DailySchedule & { date: DateTime })[]> {
   const weekStart = week.startOf("week");
 
   const schedule: (DailySchedule & { date: DateTime })[] = [];
 
   for (let i = 0; i < 7; i++) {
     const day = weekStart.plus({ days: i });
-    schedule.push({ ...getScheduleForDay(day), date: day });
+    schedule.push({ ...(await getScheduleForDay(day)), date: day });
   }
 
   return schedule;
