@@ -95,7 +95,9 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
   for (const event of ics) {
     if (event.startDate === event.endDate) continue;
     if (event.summary !== dayToSummary[event.startDate.getDate()]) {
-      const message = event.summary;
+      const message = event.summary.startsWith("SPECIAL")
+        ? event.summary.slice(9)[2]
+        : event.summary;
       const matches = Array.from(
         event.description.matchAll(
           /<tr>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/g,
@@ -113,16 +115,18 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
         const to24Hour = (timeStr: string) => {
           if (!timeStr) return "";
 
+          const s = timeStr.replace(/^-+\s*/, "").trim();
+
           // Try parsing as 12-hour format with AM/PM (e.g., "8:30 AM")
-          let dt = DateTime.fromFormat(timeStr, "h:mm a");
+          let dt = DateTime.fromFormat(s, "h:mm a");
 
           // If that fails, try parsing as 24-hour format (e.g., "8:30" or "08:30")
           if (!dt.isValid) {
-            dt = DateTime.fromFormat(timeStr, "H:mm");
+            dt = DateTime.fromFormat(s, "H:mm");
           }
 
           // Return in "HH:mm:ss" format if valid, otherwise return original cleaned string
-          return dt.isValid ? dt.toFormat("HH:mm:ss") : timeStr;
+          return dt.isValid ? dt.toFormat("HH:mm:ss") : s;
         };
 
         return {
