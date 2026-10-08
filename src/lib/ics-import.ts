@@ -103,49 +103,41 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           /<tr>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<td>(.*?)<\/td>\s*<\/tr>/g,
         ),
       );
-      const schedule = matches
-        .map((match) => {
-          // Helper to strip HTML tags and non-breaking spaces
-          const cleanText = (text: string) =>
-            text
-              .replace(/<[^>]*>/g, "") // Removes tags like <b>, </b>, etc.
-              .replace(/&nbsp;|\u00A0/g, " ") // Replaces non-breaking spaces with normal spaces
-              .trim();
+      const schedule = matches.map((match) => {
+        // Helper to strip HTML tags and non-breaking spaces
+        const cleanText = (text: string) =>
+          text
+            .replace(/<[^>]*>/g, "") // Removes tags like <b>, </b>, etc.
+            .replace(/&nbsp;|\u00A0/g, " ") // Replaces non-breaking spaces with normal spaces
+            .trim();
 
-          // Helper to convert time strings to "HH:mm:ss" (24h format)
-          const to24Hour = (timeStr: string) => {
-            if (!timeStr) return "";
+        // Helper to convert time strings to "HH:mm:ss" (24h format)
+        const to24Hour = (timeStr: string) => {
+          if (!timeStr) return "";
 
-            const s = timeStr.replace(/^-+\s*/, "").trim();
+          const s = timeStr.replace(/^-+\s*/, "").trim();
 
-            // Try parsing as 12-hour format with AM/PM (e.g., "8:30 AM")
-            let dt = DateTime.fromFormat(s, "h:mm a");
+          // Try parsing as 12-hour format with AM/PM (e.g., "8:30 AM")
+          let dt = DateTime.fromFormat(s, "h:mm a");
 
-            // If that fails, try parsing as 24-hour format (e.g., "8:30" or "08:30")
-            if (!dt.isValid) {
-              dt = DateTime.fromFormat(s, "H:mm");
-            }
+          // If that fails, try parsing as 24-hour format (e.g., "8:30" or "08:30")
+          if (!dt.isValid) {
+            dt = DateTime.fromFormat(s, "H:mm");
+          }
 
-            // Return in "HH:mm:ss" format if valid, otherwise return original cleaned string
-            return dt.isValid ? dt.toFormat("HH:mm:ss") : s;
-          };
+          // Return in "HH:mm:ss" format if valid, otherwise return original cleaned string
+          return dt.isValid ? dt.toFormat("HH:mm:ss") : s;
+        };
 
-          return {
-            name: cleanText(match[1]),
-            startTime: to24Hour(cleanText(match[2])),
-            endTime: to24Hour(cleanText(match[3])),
-          };
-        })
-        .filter((s) => s.name || s.startTime || s.endTime);
+        return {
+          name: cleanText(match[1]),
+          startTime: to24Hour(cleanText(match[2])),
+          endTime: to24Hour(cleanText(match[3])),
+        };
+      });
       const periods = [];
 
       for (const period of schedule) {
-        if (!period.startTime || !period.endTime) continue;
-        const iv = Interval.fromDateTimes(
-          DateTime.fromISO(period.startTime),
-          DateTime.fromISO(period.endTime),
-        );
-        if (!iv.isValid) continue;
         if (period.name.startsWith("Period ")) {
           periods.push(
             instructionalPeriod(
@@ -167,7 +159,10 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
             id: period.name,
             type: "instructional" as const,
             name: period.name,
-            interval: iv,
+            interval: Interval.fromDateTimes(
+              DateTime.fromISO(period.startTime),
+              DateTime.fromISO(period.endTime),
+            ),
           });
         }
       }
