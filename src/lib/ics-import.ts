@@ -14,6 +14,7 @@ import {
   DailySchedule,
   Period,
 } from "./schedule";
+import { messageOverrides } from "./day-overrides";
 
 type IcsRow = {
   summary: string;
@@ -229,7 +230,10 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
       const day = String(event.startDate.getDate()).padStart(2, "0");
 
       const formatted = `${year}-${month}-${day}`;
-      dayOverrides[formatted] = { message, periods: periodsWithSpacing };
+      dayOverrides[formatted] = {
+        message: messageOverrides[formatted] ?? message,
+        periods: periodsWithSpacing,
+      };
     }
   }
   return dayOverrides;
