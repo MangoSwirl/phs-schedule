@@ -16,7 +16,7 @@ import {
   academyPeriod,
 } from "./schedule-helpers";
 
-export const dayOverrides: Record<string, DailySchedule> = {
+const dayOverrides: Record<string, DailySchedule> = {
   "2026-08-20": {
     message: "Assessment Schedule",
     periods: [
