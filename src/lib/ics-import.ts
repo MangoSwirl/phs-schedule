@@ -279,13 +279,13 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           periods: periodsWithSpacing,
         };
       }
-    } else {
+    } else if (event.summary.includes("Break")) {
       Object.assign(
         dayOverrides,
         vacation(
           event.startDate.toISOString(),
           event.endDate.toISOString(),
-          event.description,
+          event.summary,
         ),
       );
     }
