@@ -39,13 +39,13 @@ export async function GET(request: Request) {
   const { periods, one, two, three, four, five, six, seven } = params;
 
   const remapPeriods: Record<string, string> = {
-    "Period 1": `① ${one ?? "Period"}`,
-    "Period 2": `② ${two ?? "Period"}`,
-    "Period 3": `③ ${three ?? "Period"}`,
-    "Period 4": `④ ${four ?? "Period"}`,
-    "Period 5": `⑤ ${five ?? "Period"}`,
-    "Period 6": `⑥ ${six ?? "Period"}`,
-    "Period 7": `⑦ ${seven ?? "Period"}`,
+    "1st Period": `① ${one ?? "Period"}`,
+    "2nd Period": `② ${two ?? "Period"}`,
+    "3rd Period": `③ ${three ?? "Period"}`,
+    "4th Period": `④ ${four ?? "Period"}`,
+    "5th Period": `⑤ ${five ?? "Period"}`,
+    "6th Period": `⑥ ${six ?? "Period"}`,
+    "7th Period": `⑦ ${seven ?? "Period"}`,
   };
 
   const daysForYear: DailySchedule[] = [];
@@ -63,7 +63,11 @@ export async function GET(request: Request) {
     allPeriods
       .filter((period) => period.type === "instructional")
       .map((period) => {
-        const periodName = z.object({ name: z.string() }).parse(period).name; // Will never be undefined but typescript isn't smart enough to know that yet
+        if (!("name" in period) || typeof period.name !== "string") {
+          throw new Error("Instructional periods must have a name");
+        }
+
+        const periodName = period.name;
         return {
           start: period.interval.start!.toMillis(),
           end: period.interval.end!.toMillis(),
