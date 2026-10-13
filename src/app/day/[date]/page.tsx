@@ -7,7 +7,11 @@ import { DateTime } from "luxon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default function DayView({ params }: { params: { date: string } }) {
+export default async function DayView({
+  params,
+}: {
+  params: { date: string };
+}) {
   // If the date is invalid, redirect to the current day
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/day`);
@@ -15,7 +19,7 @@ export default function DayView({ params }: { params: { date: string } }) {
 
   const date = DateTime.fromFormat(params.date, "yyyy-LL-dd");
 
-  const { periods, message } = getScheduleForDay(date);
+  const { periods, message } = await getScheduleForDay(date);
 
   return (
     <div>
