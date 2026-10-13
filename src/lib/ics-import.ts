@@ -336,11 +336,14 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
       // DTEND is exclusive, so the last day off is the day before it.
       const lastDay = new Date(event.endDate);
       lastDay.setDate(lastDay.getDate() - 1);
+      // Pass date-only strings: ICAL's all-day dates are local-midnight, and
+      // an ISO timestamp would be re-zoned by `vacation`, dropping the last day
+      // on servers whose timezone differs from the schedule's.
       Object.assign(
         dayOverrides,
         vacation(
-          event.startDate.toISOString(),
-          lastDay.toISOString(),
+          toIsoDate(event.startDate),
+          toIsoDate(lastDay),
           cleanMessage(event.summary),
         ),
       );
