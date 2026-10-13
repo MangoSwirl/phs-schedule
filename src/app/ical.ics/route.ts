@@ -8,7 +8,46 @@ import * as ics from "ics";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET() {
+const querySchema = z.object({
+  periods: z
+    .enum(["true", "false"])
+    .optional()
+    .transform((value) => value === "true"),
+  one: z.string().optional(),
+  two: z.string().optional(),
+  three: z.string().optional(),
+  four: z.string().optional(),
+  five: z.string().optional(),
+  six: z.string().optional(),
+  seven: z.string().optional(),
+});
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  const params = querySchema.parse({
+    periods: searchParams.get("periods") ?? undefined,
+    one: searchParams.get("one") ?? undefined,
+    two: searchParams.get("two") ?? undefined,
+    three: searchParams.get("three") ?? undefined,
+    four: searchParams.get("four") ?? undefined,
+    five: searchParams.get("five") ?? undefined,
+    six: searchParams.get("six") ?? undefined,
+    seven: searchParams.get("seven") ?? undefined,
+  });
+
+  const { periods, one, two, three, four, five, six, seven } = params;
+
+  const remapPeriods: Record<string, string> = {
+    "Period 1": `① ${one ?? "Period"}`,
+    "Period 2": `② ${two ?? "Period"}`,
+    "Period 3": `③ ${three ?? "Period"}`,
+    "Period 4": `④ ${four ?? "Period"}`,
+    "Period 5": `⑤ ${five ?? "Period"}`,
+    "Period 6": `⑥ ${six ?? "Period"}`,
+    "Period 7": `⑦ ${seven ?? "Period"}`,
+  };
+
   const daysForYear: DailySchedule[] = [];
 
   const totalDays = SCHOOL_YEAR_END.diff(SCHOOL_YEAR_START, "days").days + 1;
@@ -24,10 +63,13 @@ export async function GET() {
     allPeriods
       .filter((period) => period.type === "instructional")
       .map((period) => {
+        const periodName = z.object({ name: z.string() }).parse(period).name; // Will never be undefined but typescript isn't smart enough to know that yet
         return {
           start: period.interval.start!.toMillis(),
           end: period.interval.end!.toMillis(),
-          title: z.object({ name: z.string() }).parse(period).name, // Will never be undefined but typescript isn't smart enough to know that yet
+          title: periods
+            ? (remapPeriods[periodName] ?? periodName)
+            : periodName,
           uid: crypto.randomUUID(),
         };
       }),
