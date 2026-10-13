@@ -54,8 +54,8 @@ export function CalendarSyncDialog() {
           See your classes in your calendar app.
         </DialogDescription>
       </DialogHeader>
-      <div className="space-y-4">
-        <div className="space-y-2">
+      <div className="min-w-0 space-y-4">
+        <div className="min-w-0 space-y-2">
           <CopyLinkButton link={httpLink} />
           <Button className="w-full" asChild>
             <Link href={webcalLink} target="_blank">
@@ -117,7 +117,16 @@ function CopyLinkButton(props: { link: string }) {
         onClick={onCopy}
       >
         <span className="sr-only">Copy link</span>
-        <span className="flex-1 truncate text-start" aria-hidden="true">
+        <span
+          className="flex-1 overflow-hidden whitespace-nowrap text-start"
+          style={{
+            maskImage:
+              "linear-gradient(to right, black calc(100% - 2rem), transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, black calc(100% - 2rem), transparent)",
+          }}
+          aria-hidden="true"
+        >
           {props.link}
         </span>
         {isCopied ? (
