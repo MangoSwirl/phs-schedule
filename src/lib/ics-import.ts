@@ -16,7 +16,6 @@ import {
   Period,
 } from "./schedule";
 import { messageOverrides } from "./day-overrides";
-import { date } from "zod";
 
 type IcsRow = {
   summary: string;
@@ -101,7 +100,14 @@ async function fetchAndParseIcs(): Promise<IcsRow[]> {
 async function getOverridesFromIcs(ics: IcsRow[]) {
   const dayOverrides: Record<string, DailySchedule> = {};
   for (const event of ics) {
-    if (event.startDate === event.endDate) {
+    // All-day ICS events mark a single day with DTEND = DTSTART + 1 day, so a
+    // span of one day (or less) means a special schedule; anything longer is a
+    // multi-day break/vacation.
+    const spanDays = Math.round(
+      (event.endDate.getTime() - event.startDate.getTime()) / 86_400_000,
+    );
+
+    if (spanDays <= 1) {
       // Skip the recurring routine bell-schedule events; only overrides count.
       const routineSummary = dayToSummary[event.startDate.getDay()]?.trim();
       if (event.summary.trim() !== routineSummary) {
@@ -279,12 +285,15 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           periods: periodsWithSpacing,
         };
       }
-    } else if (event.summary.includes("Break")) {
+    } else {
+      // DTEND is exclusive, so the last day off is the day before it.
+      const lastDay = new Date(event.endDate);
+      lastDay.setDate(lastDay.getDate() - 1);
       Object.assign(
         dayOverrides,
         vacation(
           event.startDate.toISOString(),
-          event.endDate.toISOString(),
+          lastDay.toISOString(),
           event.summary,
         ),
       );
