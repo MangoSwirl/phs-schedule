@@ -1,17 +1,51 @@
+"use client";
+
 import {
-  DialogClose,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const PERIOD_FIELDS = [
+  { key: "one", placeholder: "1st Period" },
+  { key: "two", placeholder: "2nd Period" },
+  { key: "three", placeholder: "3rd Period" },
+  { key: "four", placeholder: "4th Period" },
+  { key: "five", placeholder: "5th Period" },
+  { key: "six", placeholder: "6th Period" },
+  { key: "seven", placeholder: "7th Period" },
+] as const;
 
 export function CalendarSyncDialog() {
+  const [origin, setOrigin] = useState("");
+  const [customPeriods, setCustomPeriods] = useState(false);
+  const [periodNames, setPeriodNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const params = new URLSearchParams();
+  if (customPeriods) {
+    params.set("periods", "true");
+    for (const { key } of PERIOD_FIELDS) {
+      const name = periodNames[key]?.trim();
+      if (name) params.set(key, name);
+    }
+  }
+
+  const query = params.toString();
+  const icsPath = query ? `/ical.ics?${query}` : "/ical.ics";
+  const httpLink = `${origin}${icsPath}`;
+  const webcalLink = `${origin.replace(/^https?/, "webcal")}${icsPath}`;
+
   return (
     <>
       <DialogHeader>
@@ -20,13 +54,45 @@ export function CalendarSyncDialog() {
           See your classes in your calendar app.
         </DialogDescription>
       </DialogHeader>
-      <div className="space-y-2">
-        <CopyLinkButton link="https://www.phs-schedule.com/ical.ics" />
-        <Button className="w-full" asChild>
-          <Link href="webcal://www.phs-schedule.com/ical.ics" target="_blank">
-            Subscribe to calendar
-          </Link>
-        </Button>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <CopyLinkButton link={httpLink} />
+          <Button className="w-full" asChild>
+            <Link href={webcalLink} target="_blank">
+              Subscribe to calendar
+            </Link>
+          </Button>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="custom-periods"
+              checked={customPeriods}
+              onChange={(event) => setCustomPeriods(event.target.checked)}
+            />
+            <Label htmlFor="custom-periods" className="cursor-pointer">
+              Custom period names
+            </Label>
+          </div>
+          {customPeriods && (
+            <div className="flex flex-col gap-2">
+              {PERIOD_FIELDS.map(({ key, placeholder }) => (
+                <Input
+                  key={key}
+                  placeholder={placeholder}
+                  aria-label={placeholder}
+                  value={periodNames[key] ?? ""}
+                  onChange={(event) =>
+                    setPeriodNames((prev) => ({
+                      ...prev,
+                      [key]: event.target.value,
+                    }))
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

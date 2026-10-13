@@ -3,6 +3,7 @@ import {
   getScheduleForDay,
   SCHOOL_YEAR_END,
   SCHOOL_YEAR_START,
+  VisiblePeriod,
 } from "@/lib/schedule";
 import * as ics from "ics";
 import { NextResponse } from "next/server";
@@ -11,7 +12,7 @@ import { z } from "zod";
 const querySchema = z.object({
   periods: z
     .enum(["true", "false"])
-    .optional()
+    .default("false")
     .transform((value) => value === "true"),
   one: z.string().optional(),
   two: z.string().optional(),
@@ -25,7 +26,7 @@ const querySchema = z.object({
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
-  const params = querySchema.parse({
+  const parsed = querySchema.safeParse({
     periods: searchParams.get("periods") ?? undefined,
     one: searchParams.get("one") ?? undefined,
     two: searchParams.get("two") ?? undefined,
@@ -36,16 +37,23 @@ export async function GET(request: Request) {
     seven: searchParams.get("seven") ?? undefined,
   });
 
-  const { periods, one, two, three, four, five, six, seven } = params;
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid query parameters" },
+      { status: 400 },
+    );
+  }
 
-  const remapPeriods: Record<string, string> = {
-    "1st Period": `① ${one ?? "Period"}`,
-    "2nd Period": `② ${two ?? "Period"}`,
-    "3rd Period": `③ ${three ?? "Period"}`,
-    "4th Period": `④ ${four ?? "Period"}`,
-    "5th Period": `⑤ ${five ?? "Period"}`,
-    "6th Period": `⑥ ${six ?? "Period"}`,
-    "7th Period": `⑦ ${seven ?? "Period"}`,
+  const { periods, one, two, three, four, five, six, seven } = parsed.data;
+
+  const remapPeriods: Record<string, string | undefined> = {
+    "1st Period": one ? `① ${one}` : undefined,
+    "2nd Period": two ? `② ${two}` : undefined,
+    "3rd Period": three ? `③ ${three}` : undefined,
+    "4th Period": four ? `④ ${four}` : undefined,
+    "5th Period": five ? `⑤ ${five}` : undefined,
+    "6th Period": six ? `⑥ ${six}` : undefined,
+    "7th Period": seven ? `⑦ ${seven}` : undefined,
   };
 
   const daysForYear: DailySchedule[] = [];
@@ -61,12 +69,10 @@ export async function GET(request: Request) {
 
   const { error, value: events } = ics.createEvents(
     allPeriods
-      .filter((period) => period.type === "instructional")
+      .filter(
+        (period): period is VisiblePeriod => period.type === "instructional",
+      )
       .map((period) => {
-        if (!("name" in period) || typeof period.name !== "string") {
-          throw new Error("Instructional periods must have a name");
-        }
-
         const periodName = period.name;
         return {
           start: period.interval.start!.toMillis(),
