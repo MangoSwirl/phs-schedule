@@ -17,6 +17,34 @@ import {
 } from "./schedule";
 import { messageOverrides } from "./day-overrides";
 
+// The bell-schedule calendar carries the special single-day schedules; the
+// events calendar carries breaks and no-school days. Neither alone is complete,
+// so both are fetched and merged.
+const SCHEDULES_CALENDAR =
+  "https://calendar.google.com/calendar/ical/c_30d5a2c1a8f1c82ef97ae6a5339f97aee29fcd9c09fcd30a6c738022fff30753%40group.calendar.google.com/public/basic.ics";
+const EVENTS_CALENDAR =
+  "https://calendar.google.com/calendar/ical/c_feedbfeaeb52412221c1a8e6cdfc43ee1e6e68e71a0d85c5d955bf48f0feea55%40group.calendar.google.com/public/basic.ics";
+const ICS_URLS = [SCHEDULES_CALENDAR, EVENTS_CALENDAR];
+
+// Matches summaries that mean "no instruction today" on the events calendar,
+// which is otherwise full of unrelated notices (meetings, concerts, etc.).
+const NO_SCHOOL_PATTERN = /no school|district closed|no students/i;
+
+// Multi-day events are only days off when they read like a break; things like
+// "Spirit Week" or "AP Testing" span several days but are normal school days.
+const MULTI_DAY_OFF_PATTERN =
+  /no school|district closed|no students|break|holiday|recess/i;
+
+// Strips the "no school"/"district closed" qualifiers for display.
+function cleanMessage(summary: string): string {
+  return summary
+    .replace(/\s*[-–—]\s*no school/i, "")
+    .replace(/\s*\(no school[^)]*\)/i, "")
+    .replace(/\s*[-–—]\s*district closed/i, "")
+    .replace(/\s*\(district closed[^)]*\)/i, "")
+    .trim();
+}
+
 type IcsRow = {
   summary: string;
   description: string;
@@ -24,7 +52,21 @@ type IcsRow = {
   endDate: Date;
   location: string;
   uid: string;
+  source: string;
 };
+
+const DAY_MS = 86_400_000;
+
+function daySpan(startDate: Date, endDate: Date): number {
+  return Math.round((endDate.getTime() - startDate.getTime()) / DAY_MS);
+}
+
+function toIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 let cachedIcs: IcsRow[] | null = null;
 let cacheTime: number = 0;
@@ -39,16 +81,20 @@ async function fetchAndParseIcs(): Promise<IcsRow[]> {
     return cachedParsedResult;
   }
   try {
-    const response = await fetch(
-      "https://calendar.google.com/calendar/ical/c_30d5a2c1a8f1c82ef97ae6a5339f97aee29fcd9c09fcd30a6c738022fff30753%40group.calendar.google.com/public/basic.ics",
-      { cache: "no-cache" },
+    const responses = await Promise.all(
+      ICS_URLS.map((url) => fetch(url, { cache: "no-cache" })),
     );
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    for (const response of responses) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
     }
 
-    const icsText = await response.text();
-    const textHash = crypto.createHash("sha256").update(icsText).digest("hex");
+    const texts = await Promise.all(responses.map((r) => r.text()));
+    const textHash = crypto
+      .createHash("sha256")
+      .update(texts.join("\n"))
+      .digest("hex");
 
     if (
       cachedIcsTextHash &&
@@ -59,35 +105,40 @@ async function fetchAndParseIcs(): Promise<IcsRow[]> {
       return cachedParsedResult;
     }
 
-    const jCalData = ICAL.parse(icsText);
-    const comp = new ICAL.Component(jCalData);
-    const vevents = comp.getAllSubcomponents("vevent");
+    const events: IcsRow[] = [];
+    texts.forEach((icsText, index) => {
+      const source = ICS_URLS[index];
+      const jCalData = ICAL.parse(icsText);
+      const comp = new ICAL.Component(jCalData);
+      const vevents = comp.getAllSubcomponents("vevent");
 
-    let events = vevents.map((vevent) => {
-      const event = new ICAL.Event(vevent);
-      return {
-        summary: event.summary,
-        description: event.description,
-        startDate: event.startDate.toJSDate(),
-        endDate: event.endDate.toJSDate(),
-        location: event.location,
-        uid: event.uid,
-      };
+      for (const vevent of vevents) {
+        const event = new ICAL.Event(vevent);
+        events.push({
+          summary: event.summary,
+          description: event.description,
+          startDate: event.startDate.toJSDate(),
+          endDate: event.endDate.toJSDate(),
+          location: event.location,
+          uid: event.uid,
+          source,
+        });
+      }
     });
 
     // in order
     events.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
     // only dates this school year
-    events = events.filter(
+    const schoolYearEvents = events.filter(
       (ev) =>
         ev.startDate.getTime() >= SCHOOL_YEAR_START.toJSDate().getTime() &&
         ev.startDate.getTime() <= SCHOOL_YEAR_END.toJSDate().getTime(),
     );
-    cachedParsedResult = events;
+    cachedParsedResult = schoolYearEvents;
     cachedIcsTextHash = textHash;
     cacheTime = now;
-    return events;
+    return schoolYearEvents;
   } catch (error) {
     console.error("Failed to fetch or parse ICS:", error);
     if (cachedParsedResult) {
@@ -103,11 +154,11 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
     // All-day ICS events mark a single day with DTEND = DTSTART + 1 day, so a
     // span of one day (or less) means a special schedule; anything longer is a
     // multi-day break/vacation.
-    const spanDays = Math.round(
-      (event.endDate.getTime() - event.startDate.getTime()) / 86_400_000,
-    );
+    const spanDays = daySpan(event.startDate, event.endDate);
 
     if (spanDays <= 1) {
+      // The events calendar's single-day notices are handled separately below.
+      if (event.source === EVENTS_CALENDAR) continue;
       // Skip the recurring routine bell-schedule events; only overrides count.
       const routineSummary = dayToSummary[event.startDate.getDay()]?.trim();
       if (event.summary.trim() !== routineSummary) {
@@ -275,17 +326,13 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           periodsWithSpacing.push(period);
         }
 
-        const year = event.startDate.getFullYear();
-        const month = String(event.startDate.getMonth() + 1).padStart(2, "0");
-        const day = String(event.startDate.getDate()).padStart(2, "0");
-
-        const formatted = `${year}-${month}-${day}`;
+        const formatted = toIsoDate(event.startDate);
         dayOverrides[formatted] = {
           message: messageOverrides[formatted] ?? message,
           periods: periodsWithSpacing,
         };
       }
-    } else {
+    } else if (MULTI_DAY_OFF_PATTERN.test(event.summary)) {
       // DTEND is exclusive, so the last day off is the day before it.
       const lastDay = new Date(event.endDate);
       lastDay.setDate(lastDay.getDate() - 1);
@@ -294,9 +341,23 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
         vacation(
           event.startDate.toISOString(),
           lastDay.toISOString(),
-          event.summary,
+          cleanMessage(event.summary),
         ),
       );
+    }
+  }
+  // Single-day no-school days (holidays etc.) live on the events calendar and
+  // are EXDATEd from the bell-schedule feed, so pull them from there.
+  for (const event of ics) {
+    if (event.source !== EVENTS_CALENDAR) continue;
+    if (daySpan(event.startDate, event.endDate) > 1) continue;
+    if (!NO_SCHOOL_PATTERN.test(event.summary)) continue;
+    const formatted = toIsoDate(event.startDate);
+    if (!(formatted in dayOverrides)) {
+      dayOverrides[formatted] = {
+        message: messageOverrides[formatted] ?? cleanMessage(event.summary),
+        periods: [],
+      };
     }
   }
   // No-school dates (holidays etc.) are EXDATEd from the calendar, so they
