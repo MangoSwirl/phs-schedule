@@ -26,7 +26,10 @@ import { toast } from "sonner";
 export const feedbackFormSchema = z.object({
   body: z
     .string()
-    .min(1, `Please enter a comment. ${process.env.IS_NEW ?? false}`)
+    .min(
+      1,
+      `Please enter a comment. ${(process.env.IS_NEW ?? false) ? "New" : "Old"}`,
+    )
     .max(1000, "Please shorten your comment."),
 });
 
