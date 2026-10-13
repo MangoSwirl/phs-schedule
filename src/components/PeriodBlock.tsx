@@ -61,11 +61,9 @@ export function PeriodBlock({
         className={cn(
           "flex flex-row items-stretch justify-stretch gap-2 px-3 text-sm transition duration-500",
           period.type === "break" && "justify-center",
-          isHappening &&
-            period.type === "break" &&
-            "border-l-2 border-purple",
+          isHappening && period.type === "break" && "border-l-2 border-purple",
           !temporalSizing && period.type === "instructional" && "p-3",
-          isHappening && period.type === "instructional" && "pl-2"
+          isHappening && period.type === "instructional" && "pl-2",
         )}
       >
         {period.type === "instructional" && (
