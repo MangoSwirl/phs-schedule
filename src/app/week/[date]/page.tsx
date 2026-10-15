@@ -13,7 +13,11 @@ import { redirect } from "next/navigation";
 import InfoMenu from "@/components/InfoMenu";
 import { PeriodBlock } from "../../../components/PeriodBlock";
 
-export default function WeekView({ params }: { params: { date: string } }) {
+export default async function WeekView({
+  params,
+}: {
+  params: { date: string };
+}) {
   // If the date is invalid, redirect to the current week
   if (!DateTime.fromFormat(params.date, "yyyy-LL-dd").isValid) {
     redirect(`/week`);
@@ -30,7 +34,7 @@ export default function WeekView({ params }: { params: { date: string } }) {
 
   const weekStart = DateTime.fromFormat(params.date, "yyyy-LL-dd");
 
-  const schedule = getScheduleForWeek(weekStart);
+  const schedule = await getScheduleForWeek(weekStart);
   let latestDismissal: DateTime | null = weekStart.set({
     hour: 14,
     minute: 30,
