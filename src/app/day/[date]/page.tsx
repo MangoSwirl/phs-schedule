@@ -48,38 +48,45 @@ export default async function DayView({
 
 function DayNav({ date }: { date: DateTime }) {
   return (
-    <nav className="flex items-center justify-between gap-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        asChild
-        aria-label="Yesterday"
-        className="print:hidden"
-      >
-        <Link
-          href={`/day/${date.minus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
-          prefetch
+    <nav className="flex flex-col items-center gap-1">
+      <div className="flex items-center justify-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          aria-label="Yesterday"
+          className="print:hidden"
         >
-          <ChevronLeftIcon className="h-4 w-4" />
-        </Link>
-      </Button>
+          <Link
+            href={`/day/${date.minus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
+            prefetch
+          >
+            <ChevronLeftIcon className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="print:hidden">
+          <Link href="/day" prefetch>
+            Today
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          aria-label="Tomorrow"
+          className="print:hidden"
+        >
+          <Link
+            href={`/day/${date.plus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
+            prefetch
+          >
+            <ChevronRightIcon className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
       <h1 className="min-w-[10rem] text-center font-medium text-neutral-900">
         {date.toFormat("EEEE, LLLL d")}
       </h1>
-      <Button
-        variant="ghost"
-        size="icon"
-        asChild
-        aria-label="Tomorrow"
-        className="print:hidden"
-      >
-        <Link
-          href={`/day/${date.plus({ days: 1 }).toFormat("yyyy-LL-dd")}`}
-          prefetch
-        >
-          <ChevronRightIcon className="h-4 w-4" />
-        </Link>
-      </Button>
     </nav>
   );
 }

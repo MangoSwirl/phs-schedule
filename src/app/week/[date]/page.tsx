@@ -100,41 +100,48 @@ export default async function WeekView({
 
 function WeekNav({ date }: { date: DateTime }) {
   return (
-    <nav className="flex items-center justify-center gap-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        asChild
-        aria-label="Previous week"
-        className="print:hidden"
-      >
-        <Link
-          href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
-          prefetch
+    <nav className="flex flex-col items-center gap-1">
+      <div className="flex items-center justify-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          aria-label="Previous week"
+          className="print:hidden"
         >
-          <ChevronLeftIcon className="h-4 w-4" />
-        </Link>
-      </Button>
+          <Link
+            href={`/week/${date.minus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
+            prefetch
+          >
+            <ChevronLeftIcon className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="print:hidden">
+          <Link href="/week" prefetch>
+            Today
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          asChild
+          aria-label="Next week"
+          className="print:hidden"
+        >
+          <Link
+            href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
+            prefetch
+          >
+            <ChevronRightIcon className="h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
       <h1 className="min-w-[150px] text-center text-neutral-600">
         Week of{" "}
         <span className="font-medium text-neutral-900">
           {date.toFormat("LLLL d")}
         </span>
       </h1>
-      <Button
-        variant="ghost"
-        size="icon"
-        asChild
-        aria-label="Next week"
-        className="print:hidden"
-      >
-        <Link
-          href={`/week/${date.plus({ weeks: 1 }).toFormat("yyyy-LL-dd")}`}
-          prefetch
-        >
-          <ChevronRightIcon className="h-4 w-4" />
-        </Link>
-      </Button>
     </nav>
   );
 }

@@ -14,11 +14,12 @@ import {
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { CalendarSyncDialog } from "./calendary-sync-dialog";
+import { AboutDialog } from "./about-dialog";
 
 export default function InfoMenu() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState<
-    "calendar" | "feedback" | "problem"
+    "calendar" | "feedback" | "problem" | "about"
   >("feedback");
 
   return (
@@ -51,6 +52,14 @@ export default function InfoMenu() {
                 Report a problem
               </DropdownMenuItem>
             </DialogTrigger>
+
+            <DropdownMenuSeparator />
+
+            <DialogTrigger asChild>
+              <DropdownMenuItem onClick={() => setDialogType("about")}>
+                About
+              </DropdownMenuItem>
+            </DialogTrigger>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -62,6 +71,7 @@ export default function InfoMenu() {
         {dialogType === "problem" && (
           <ProblemForm onSuccess={() => setDialogOpen(false)} />
         )}
+        {dialogType === "about" && <AboutDialog />}
       </DialogContent>
     </Dialog>
   );
