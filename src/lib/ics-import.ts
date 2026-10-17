@@ -326,10 +326,32 @@ async function getOverridesFromIcs(ics: IcsRow[]) {
           periodsWithSpacing.push(period);
         }
 
+        // Preset schedules fold the passing period that follows a break into
+        // the break itself — Monday Brunch is 10:10-10:25 (15 min), not
+        // 10:10-10:15 plus a passing period. The source tables list the break
+        // and its passing separately (explicitly or as a gap), which made
+        // override days show Brunch/Lunch ten minutes shorter. Extend each
+        // break to include the passing period directly after it.
+        const mergedPeriods: Period[] = [];
+        for (const period of periodsWithSpacing) {
+          const previous = mergedPeriods[mergedPeriods.length - 1];
+          if (previous?.type === "break" && period.type === "passing") {
+            mergedPeriods[mergedPeriods.length - 1] = {
+              ...previous,
+              interval: Interval.fromDateTimes(
+                previous.interval.start!,
+                period.interval.end!,
+              ),
+            };
+          } else {
+            mergedPeriods.push(period);
+          }
+        }
+
         const formatted = toIsoDate(event.startDate);
         dayOverrides[formatted] = {
           message: messageOverrides[formatted] ?? message,
-          periods: periodsWithSpacing,
+          periods: mergedPeriods,
         };
       }
     } else if (MULTI_DAY_OFF_PATTERN.test(event.summary)) {
