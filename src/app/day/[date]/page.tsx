@@ -23,9 +23,13 @@ export default async function DayView({
 
   return (
     <div>
-      <div className="sticky left-0 right-0 top-0 flex flex-col items-center bg-white/40 p-4 backdrop-blur-sm">
+      <div className="sticky left-0 right-0 top-0 flex flex-col items-center bg-white/40 p-4 backdrop-blur-sm dark:bg-neutral-900/40">
         <DayNav date={date} />
-        {message && <p className="text-center text-neutral-700">{message}</p>}
+        {message && (
+          <p className="text-center text-neutral-700 dark:text-neutral-300">
+            {message}
+          </p>
+        )}
       </div>
       <div className="mx-auto flex max-w-lg flex-1 flex-col justify-center px-8 pb-8">
         {periods.map((period) => (
@@ -38,7 +42,9 @@ export default async function DayView({
           />
         ))}
         {periods.length === 0 && (
-          <p className="text-center text-neutral-500">No school</p>
+          <p className="text-center text-neutral-500 dark:text-neutral-400">
+            No school
+          </p>
         )}
       </div>
       <InfoMenu />
@@ -84,7 +90,7 @@ function DayNav({ date }: { date: DateTime }) {
           </Link>
         </Button>
       </div>
-      <h1 className="min-w-[10rem] text-center font-medium text-neutral-900">
+      <h1 className="min-w-[10rem] text-center font-medium text-neutral-900 dark:text-neutral-100">
         {date.toFormat("EEEE, LLLL d")}
       </h1>
     </nav>
