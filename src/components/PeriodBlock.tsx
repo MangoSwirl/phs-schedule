@@ -50,7 +50,7 @@ export function PeriodBlock({
       className={cn(
         "flex min-h-11 items-stretch justify-center transition duration-500",
         period.type === "instructional" &&
-          "justify-stretch rounded-md border border-neutral-200 shadow-sm",
+          "justify-stretch rounded-md border border-neutral-200 shadow-sm dark:border-neutral-800",
         hasHappened && "opacity-50",
       )}
       style={
@@ -96,7 +96,7 @@ const ProgressIndicator = ({ progress }: { progress: number }) => {
   if (progress <= 0 || progress >= 1) return null;
 
   return (
-    <div className="relative my-2 w-[5px] overflow-hidden rounded-full bg-gray-300">
+    <div className="relative my-2 w-[5px] overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800">
       <div
         className="absolute left-0 right-0 top-0 rounded-full bg-purple transition"
         style={{ height: Math.round(progress * 100) + "%" }}

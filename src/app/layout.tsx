@@ -3,6 +3,8 @@ import { Barlow } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const barlow = Barlow({
   subsets: ["latin"],
@@ -28,9 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={barlow.className}>
-        {children}
-        <Toaster />
-        <Analytics />
+        <ThemeProvider>
+          {children}
+          <ThemeToggle />
+          <Toaster />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

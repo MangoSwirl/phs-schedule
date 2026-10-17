@@ -136,9 +136,9 @@ function WeekNav({ date }: { date: DateTime }) {
           </Link>
         </Button>
       </div>
-      <h1 className="min-w-[150px] text-center text-neutral-600">
+      <h1 className="min-w-[150px] text-center text-neutral-600 dark:text-neutral-400">
         Week of{" "}
-        <span className="font-medium text-neutral-900">
+        <span className="font-medium text-neutral-900 dark:text-neutral-100">
           {date.toFormat("LLLL d")}
         </span>
       </h1>
@@ -165,11 +165,13 @@ function DailyScheduleView({
         {date && (
           <h2 className="text-center">
             {date.weekdayLong}{" "}
-            <span className="text-neutral-500">{date.toFormat("M/d")}</span>
+            <span className="text-neutral-500 dark:text-neutral-400">
+              {date.toFormat("M/d")}
+            </span>
           </h2>
         )}
         {schedule.message && (
-          <p className="text-center text-sm text-neutral-700">
+          <p className="text-center text-sm text-neutral-700 dark:text-neutral-300">
             {schedule.message}
           </p>
         )}
@@ -189,7 +191,9 @@ function DailyScheduleView({
           <div style={{ flex: minutesBeforeMax / 10 }} aria-hidden />
         )}
         {periods.length === 0 && (
-          <p className="text-center text-neutral-500">No school</p>
+          <p className="text-center text-neutral-500 dark:text-neutral-400">
+            No school
+          </p>
         )}
       </div>
     </div>
